@@ -153,16 +153,44 @@ function ControlTray({
 
   //handler for swapping from one video-stream to the next
   const changeStreams = (next?: UseMediaStreamResult) => async () => {
-    if (next) {
-      const mediaStream = await next.start();
-      setActiveVideoStream(mediaStream);
-      onVideoStreamChange(mediaStream);
-    } else {
+    try {
+      // Stop other streams before starting new one
+      if (next) {
+        // Stop all other streams first
+        videoStreams
+          .filter((msr) => msr !== next && msr.isStreaming)
+          .forEach((msr) => msr.stop());
+
+        // Start the new stream
+        const mediaStream = await next.start();
+        if (mediaStream && mediaStream.active) {
+          setActiveVideoStream(mediaStream);
+          onVideoStreamChange(mediaStream);
+          
+          // Add error handling for stream ending
+          mediaStream.getVideoTracks()[0].onended = () => {
+            console.log('Video stream ended');
+            setActiveVideoStream(null);
+            onVideoStreamChange(null);
+          };
+        }
+      } else {
+        // If no next stream, stop current stream
+        if (activeVideoStream) {
+          activeVideoStream.getTracks().forEach(track => track.stop());
+        }
+        setActiveVideoStream(null);
+        onVideoStreamChange(null);
+      }
+    } catch (error) {
+      console.error('Error changing video streams:', error);
+      // If error occurs, cleanup any existing streams
+      if (activeVideoStream) {
+        activeVideoStream.getTracks().forEach(track => track.stop());
+      }
       setActiveVideoStream(null);
       onVideoStreamChange(null);
     }
-
-    videoStreams.filter((msr) => msr !== next).forEach((msr) => msr.stop());
   };
 
   // Add drag handlers

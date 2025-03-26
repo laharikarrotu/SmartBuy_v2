@@ -20,40 +20,81 @@ import { UseMediaStreamResult } from "./use-media-stream-mux";
 export function useWebcam(): UseMediaStreamResult {
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [isStreaming, setIsStreaming] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     const handleStreamEnded = () => {
       setIsStreaming(false);
       setStream(null);
+      setError(null);
     };
+
     if (stream) {
-      stream
-        .getTracks()
-        .forEach((track) => track.addEventListener("ended", handleStreamEnded));
+      stream.getTracks().forEach((track) => {
+        track.addEventListener("ended", handleStreamEnded);
+        // Add error handling for tracks
+        track.onmute = () => {
+          console.log('Track muted:', track.label);
+        };
+        track.onunmute = () => {
+          console.log('Track unmuted:', track.label);
+        };
+      });
+
       return () => {
-        stream
-          .getTracks()
-          .forEach((track) =>
-            track.removeEventListener("ended", handleStreamEnded),
-          );
+        stream.getTracks().forEach((track) => {
+          track.removeEventListener("ended", handleStreamEnded);
+          track.onmute = null;
+          track.onunmute = null;
+        });
       };
     }
   }, [stream]);
 
   const start = async () => {
-    const mediaStream = await navigator.mediaDevices.getUserMedia({
-      video: true,
-    });
-    setStream(mediaStream);
-    setIsStreaming(true);
-    return mediaStream;
+    try {
+      // Check if we already have permissions
+      const permissions = await navigator.permissions.query({ name: 'camera' as PermissionName });
+      
+      if (permissions.state === 'denied') {
+        throw new Error('Camera permission denied');
+      }
+
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+          frameRate: { ideal: 30 }
+        }
+      });
+
+      if (!mediaStream || !mediaStream.active) {
+        throw new Error('Failed to get active media stream');
+      }
+
+      setStream(mediaStream);
+      setIsStreaming(true);
+      setError(null);
+      return mediaStream;
+    } catch (err) {
+      console.error('Error starting webcam:', err);
+      setError(err as Error);
+      setIsStreaming(false);
+      setStream(null);
+      throw err;
+    }
   };
 
   const stop = () => {
     if (stream) {
-      stream.getTracks().forEach((track) => track.stop());
+      stream.getTracks().forEach((track) => {
+        track.stop();
+        track.onmute = null;
+        track.onunmute = null;
+      });
       setStream(null);
       setIsStreaming(false);
+      setError(null);
     }
   };
 
@@ -63,6 +104,7 @@ export function useWebcam(): UseMediaStreamResult {
     stop,
     isStreaming,
     stream,
+    error
   };
 
   return result;

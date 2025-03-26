@@ -80,7 +80,7 @@ function App() {
                   <Route path="/personalized/:id" element={<PersonalizedProductDetail />} />
                 </Routes>
               </div>
-              <div className="video-container">
+              <div className="video-container active">
                 <video ref={videoRef} autoPlay muted playsInline />
                 <ControlTray
                   videoRef={videoRef}

@@ -29,44 +29,50 @@ interface FunctionCall {
 
 const systemInstructionObject = {
   parts: [{
-    text: `You are a very happy PetSmart shopping assistant.
-    - When user says 'hi' or 'hello', ONLY respond with 'Hi, how can I help you today?'
-    
-    - When user mentions 'looking for dog food' or 'dog food', NAVIGATE to '/dog' and ONLY say 'Here are our popular dog food options'
-    
-    - When user mentions 'purina pro plan' or 'sensitive skin', NAVIGATE to '/product/1' and ONLY say 'Here's the Purina Pro Plan Sensitive Skin & Stomach Adult Dog Food'
-    
-    - When user mentions 'hills science diet' or 'sensitive stomach', NAVIGATE to '/product/2' and ONLY say 'Here's the Hill's Science Diet Sensitive Stomach & Skin Dog Food'
-    
-    - When user mentions 'blue buffalo' or 'life protection', NAVIGATE to '/product/3' and ONLY say 'Here's the Blue Buffalo Life Protection Formula'
-    
-    - When user mentions 'royal canin' or 'small breed', NAVIGATE to '/product/4' and ONLY say 'Here's the Royal Canin Small Breed Adult Dog Food'
-    
-    - When user mentions 'kong toy' or 'dog toy', NAVIGATE to '/personalized/3' and ONLY say 'Here's the KONG Extreme Dog Toy'
-    
-    - When user mentions 'nylabone' or 'chew toy', NAVIGATE to '/personalized/2' and ONLY say 'Here's the Nylabone DuraChew Toy'
-    
-    - When user mentions 'tennis ball' or 'fetch toy', NAVIGATE to '/personalized/3' and ONLY say 'Here's the Tennis Ball Dog Toy'
-    
-    - When user mentions 'rope toy' or 'tug toy', NAVIGATE to '/personalized/4' and ONLY say 'Here's the Rope Tug Dog Toy'
-    
-    - When user mentions 'cart' or 'checkout' or 'view cart', NAVIGATE to '/cart' and ONLY say 'Here's your shopping cart'
-    
-    - When user mentions 'at the store' or 'instore', NAVIGATE to '/instore' and ONLY say 'Welcome to the store, how can I help you?'
-    
-    - When user is in the instore page and mentions 'lab' and 'treat', ONLY say 'Here are some treat recommendations for your lab! I've highlighted where you can find them in the store.'
-    
-    - When rewards prompt appears, ONLY ask 'Are you a rewards member?'
-    
-    - When user says 'yes' to rewards, CLICK the yes button
-    
-    - When user says 'no' to rewards, CLICK the no button
-    
-    - When user is on a product page (NOT personalized) and says 'add to cart', CLICK add to cart button and ask 'Would you like to check some personalized items just for Max?'
-    
-    - When user is on a personalized page and says 'add to cart', ONLY CLICK add to cart button
-    
-    - When user says 'yes' to personalized items, NAVIGATE to '/personalized' and say 'Here are some items I picked for Max'`
+    text: `You are a helpful SmartBuy shopping assistant. You can navigate to any product or category in the store through voice commands.
+
+    Available Navigation:
+    1. Main Categories
+       - "Take me to all products" → "/all"
+       - "Show me clothing" → "/clothing"
+       - "Go to electronics" → "/electronics"
+       - "Show me pet supplies" → "/dog"
+
+    2. Specific Products
+       - "Show me baby boot jeans" → "/baby-boot-jean"
+       - "Take me to modern rib pullover" → "/modern-rib-pullover"
+       - "Show me straw panama hat" → "/straw-panama-hat"
+       - "Go to gap logo tote" → "/gap-logo-tote"
+       - "Show me dog food" → "/product/1"
+       - "Take me to pet toys" → "/personalized/3"
+
+    3. Shopping Features
+       - "Show my cart" → "/cart"
+       - "Go to my profile" → "/profile"
+       - "Take me to the store" → "/instore"
+       - "Show personalized items" → "/personalized"
+
+    Cart Commands:
+    - "Add this to my cart"
+    - "Add to cart"
+    - "Put this in my cart"
+    - "I want to buy this"
+    - "Add this item to cart"
+    - "Add to shopping cart"
+
+    Navigation Commands:
+    - "Take me to..."
+    - "Show me..."
+    - "Go to..."
+    - "Navigate to..."
+    - "I want to see..."
+    - "Where can I find..."
+    - "Show me where to find..."
+
+    You can understand natural language requests for any product or category in the store.
+    If a user asks for something not in the predefined routes, try to find the closest matching category or product.
+    Always confirm the navigation with a friendly response.
+    When adding items to cart, confirm the action with a friendly message.`
   }]
 };
 
@@ -74,14 +80,19 @@ const toolObject: Tool[] = [{
   functionDeclarations: [
     {
       name: "navigate",
-      description: "Navigate to a specific page",
+      description: "Navigate to any page or product in the store",
       parameters: {
         type: SchemaType.OBJECT,
         properties: {
           route: {
             type: SchemaType.STRING,
+            description: "The route to navigate to",
             enum: [
+              "/",
+              "/all",
               "/dog",
+              "/clothing",
+              "/electronics",
               "/product/1",
               "/product/2",
               "/product/3",
@@ -93,8 +104,16 @@ const toolObject: Tool[] = [{
               "/personalized/4",
               "/profile",
               "/cart",
-              "/instore"
+              "/instore",
+              "/baby-boot-jean",
+              "/modern-rib-pullover",
+              "/straw-panama-hat",
+              "/gap-logo-tote"
             ]
+          },
+          response: {
+            type: SchemaType.STRING,
+            description: "A friendly response to confirm the navigation"
           }
         },
         required: ["route"]
@@ -102,13 +121,18 @@ const toolObject: Tool[] = [{
     },
     {
       name: "addToCart",
-      description: "Click add to cart button",
+      description: "Add an item to the shopping cart",
       parameters: {
         type: SchemaType.OBJECT,
         properties: {
           action: {
             type: SchemaType.STRING,
+            description: "The action to perform",
             enum: ["click"]
+          },
+          response: {
+            type: SchemaType.STRING,
+            description: "A friendly response to confirm the item was added to cart"
           }
         },
         required: ["action"]
@@ -116,12 +140,13 @@ const toolObject: Tool[] = [{
     },
     {
       name: "respondToRewardsPrompt",
-      description: "Click yes/no on rewards prompt",
+      description: "Handle rewards program interactions",
       parameters: {
         type: SchemaType.OBJECT,
         properties: {
           isRewardsMember: {
-            type: SchemaType.BOOLEAN
+            type: SchemaType.BOOLEAN,
+            description: "Whether the user is a rewards member"
           }
         },
         required: ["isRewardsMember"]
@@ -129,12 +154,13 @@ const toolObject: Tool[] = [{
     },
     {
       name: "showInstoreRecommendations",
-      description: "Show recommendations in the instore page",
+      description: "Show personalized recommendations in store",
       parameters: {
         type: SchemaType.OBJECT,
         properties: {
           action: {
             type: SchemaType.STRING,
+            description: "The action to perform",
             enum: ["show"]
           }
         },
@@ -190,34 +216,69 @@ const NavAssistantComponent = () => {
         switch (fCall.name) {
           case "navigate":
             if (fCall.args?.route) {
-              if (fCall.args.route.startsWith('/personalized/')) {
-                // Extract the product ID
-                const productId = fCall.args.route.split('/').pop();
-                
-                // Find and click the product card
-                const productCard = document.querySelector(
-                  `.product-card[data-product-id="${productId}"]`
-                ) as HTMLElement;
-                
-                if (productCard) {
-                  productCard.click();
+              try {
+                if (fCall.args.route.startsWith('/personalized/')) {
+                  const productId = fCall.args.route.split('/').pop();
+                  const productCard = document.querySelector(
+                    `.product-card[data-product-id="${productId}"]`
+                  ) as HTMLElement;
+                  
+                  if (productCard) {
+                    productCard.click();
+                    // Send confirmation response
+                    if (fCall.args.response) {
+                      client.send([{ text: fCall.args.response }]);
+                    }
+                  }
+                } else {
+                  navigate(fCall.args.route);
+                  // Send confirmation response
+                  if (fCall.args.response) {
+                    client.send([{ text: fCall.args.response }]);
+                  }
                 }
-              } else {
-                navigate(fCall.args.route);
+              } catch (error) {
+                console.error('Navigation error:', error);
+                client.send([{ text: "I apologize, but I couldn't navigate to that location. Could you please try again?" }]);
               }
             }
             break;
 
           case "addToCart":
-            const location = window.location.pathname;
-            const addToCartButton = document.querySelector(
-              location.includes('/personalized') 
-                ? '.add-to-cart-btn'
-                : '.add-to-cart-btn'
-            ) as HTMLButtonElement;
-            
-            if (addToCartButton) {
-              addToCartButton.click();
+            try {
+              // Find the add to cart button based on the current page
+              const location = window.location.pathname;
+              let addToCartButton: HTMLButtonElement | null = null;
+
+              if (location.includes('/personalized/')) {
+                // For personalized product pages
+                addToCartButton = document.querySelector('.add-to-cart-btn') as HTMLButtonElement;
+              } else if (location.includes('/product/')) {
+                // For regular product pages
+                addToCartButton = document.querySelector('.add-to-cart-btn') as HTMLButtonElement;
+              } else if (location.includes('/all') || location.includes('/clothing') || 
+                         location.includes('/electronics') || location.includes('/dog')) {
+                // For category pages, find the first product's add to cart button
+                const productCard = document.querySelector('.product-card') as HTMLElement;
+                if (productCard) {
+                  addToCartButton = productCard.querySelector('.add-to-cart-btn') as HTMLButtonElement;
+                }
+              }
+
+              if (addToCartButton) {
+                addToCartButton.click();
+                // Send confirmation response
+                if (fCall.args?.response) {
+                  client.send([{ text: fCall.args.response }]);
+                } else {
+                  client.send([{ text: "I've added that item to your cart!" }]);
+                }
+              } else {
+                client.send([{ text: "I couldn't find the add to cart button. Please make sure you're on a product page." }]);
+              }
+            } catch (error) {
+              console.error('Add to cart error:', error);
+              client.send([{ text: "I apologize, but I couldn't add the item to your cart. Could you please try again?" }]);
             }
             break;
 
