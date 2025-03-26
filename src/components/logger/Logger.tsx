@@ -51,7 +51,7 @@ const LogEntry = ({
     message,
   }: {
     message: StreamingLog["message"];
-  }) => ReactNode;
+  }) => JSX.Element;
 }): JSX.Element => (
   <li
     className={cn(
@@ -76,11 +76,11 @@ const PlainTextMessage = ({
   message,
 }: {
   message: StreamingLog["message"];
-}) => <span>{message as string}</span>;
+}): JSX.Element => <span>{message as string}</span>;
 
 type Message = { message: StreamingLog["message"] };
 
-const AnyMessage = ({ message }: Message) => (
+const AnyMessage = ({ message }: Message): JSX.Element => (
   <pre>{JSON.stringify(message, null, "  ")}</pre>
 );
 
@@ -119,7 +119,7 @@ const RenderPart = ({ part }: { part: Part }) =>
     </div>
   );
 
-const ClientContentLog = ({ message }: Message) => {
+const ClientContentLog = ({ message }: Message): JSX.Element => {
   const { turns, turnComplete } = (message as ClientContentMessage)
     .clientContent;
   return (
@@ -139,7 +139,7 @@ const ClientContentLog = ({ message }: Message) => {
   );
 };
 
-const ToolCallLog = ({ message }: Message) => {
+const ToolCallLog = ({ message }: Message): JSX.Element => {
   const { toolCall } = message as ToolCallMessage;
   return (
     <div className={cn("rich-log tool-call")}>
@@ -203,7 +203,7 @@ const ModelTurnLog = ({ message }: Message): JSX.Element => {
   );
 };
 
-const CustomPlainTextLog = (msg: string) => () =>
+const CustomPlainTextLog = (msg: string): (() => JSX.Element) => () =>
   <PlainTextMessage message={msg} />;
 
 export type LoggerFilterType = "conversations" | "tools" | "none";

@@ -16,7 +16,6 @@
 
 import cn from "classnames";
 import { useEffect, useRef, useState } from "react";
-import { RiSidebarFoldLine, RiSidebarUnfoldLine } from "react-icons/ri";
 import Select from "react-select";
 import { useLiveAPIContext } from "../../contexts/LiveAPIContext";
 import { useLoggerStore } from "../../lib/store-logger";
@@ -29,7 +28,7 @@ const filterOptions = [
   { value: "none", label: "All" },
 ];
 
-export default function SidePanel() {
+export default function SidePanel(): JSX.Element {
   const { connected, client } = useLiveAPIContext();
   const [open, setOpen] = useState(true);
   const loggerRef = useRef<HTMLDivElement>(null);
@@ -65,7 +64,6 @@ export default function SidePanel() {
 
   const handleSubmit = () => {
     client.send([{ text: textInput }]);
-
     setTextInput("");
     if (inputRef.current) {
       inputRef.current.innerText = "";
@@ -78,11 +76,11 @@ export default function SidePanel() {
         <h2>Console</h2>
         {open ? (
           <button className="opener" onClick={() => setOpen(false)}>
-            <RiSidebarFoldLine color="#b4b8bb" />
+            <span className="material-symbols-outlined">chevron_left</span>
           </button>
         ) : (
           <button className="opener" onClick={() => setOpen(true)}>
-            <RiSidebarUnfoldLine color="#b4b8bb" />
+            <span className="material-symbols-outlined">chevron_right</span>
           </button>
         )}
       </header>
@@ -125,7 +123,7 @@ export default function SidePanel() {
           filter={(selectedOption?.value as LoggerFilterType) || "none"}
         />
       </div>
-      <div className={cn("input-container", { disabled: !connected })}>
+      <div className="input-container">
         <div className="input-content">
           <textarea
             className="input-area"
@@ -147,7 +145,6 @@ export default function SidePanel() {
           >
             Type&nbsp;something...
           </span>
-
           <button
             className="send-button material-symbols-outlined filled"
             onClick={handleSubmit}
