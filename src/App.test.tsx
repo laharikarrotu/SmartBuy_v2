@@ -15,28 +15,23 @@
  */
 
 import React from 'react';
-import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import { render } from '@testing-library/react';
 import App from './App';
 
-// Mock the Auth0 provider
+// Mock all providers to avoid environment-specific issues
 jest.mock('./auth/Auth0ProviderWithNavigate', () => ({
   Auth0ProviderWithNavigate: ({ children }: { children: React.ReactNode }) => <div>{children}</div>
 }));
 
-// Mock the Cart provider
 jest.mock('./contexts/CartContext', () => ({
   CartProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>
 }));
 
-// Mock the LiveAPI provider
 jest.mock('./contexts/LiveAPIContext', () => ({
   LiveAPIProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>
 }));
 
-describe('App', () => {
-  test('renders without crashing', () => {
-    render(<App />);
-    expect(document.body).toBeInTheDocument();
-  });
+// Simple test that just renders the app
+test('renders without crashing', () => {
+  render(<App />);
 });
