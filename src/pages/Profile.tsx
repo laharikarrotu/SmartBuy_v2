@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import './Profile.scss';
-import OpenAI from 'openai';
 
 /// <reference types="vite/client" />
 
@@ -28,11 +27,14 @@ interface ChatHistory {
   createdAt: Date;
 }
 
-// Use environment variable - React style
-const API_KEY = process.env.REACT_APP_OPENAI_API_KEY as string;
+// Use environment variable for Gemini API
+const API_KEY = process.env.REACT_APP_GEMINI_API_KEY as string;
 if (typeof API_KEY !== "string") {
-  throw new Error("set REACT_APP_OPENAI_API_KEY in .env");
+  throw new Error("set REACT_APP_GEMINI_API_KEY in .env");
 }
+
+const host = "generativelanguage.googleapis.com";
+const uri = `wss://${host}/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContent`;
 
 export const Profile = () => {
   const { user, isLoading } = useAuth0();
@@ -44,7 +46,7 @@ export const Profile = () => {
       messages: [
         {
           role: 'assistant',
-          content: 'Hello! I\'m your PetSmart shopping assistant. How can I help you find the perfect products for your pet today?',
+          content: 'Hello! I\'m your SmartBuy shopping assistant. How can I help you find the perfect products today?',
           timestamp: new Date('2024-03-15T10:30:00'),
           id: 'initial-1'
         },
@@ -337,12 +339,6 @@ export const Profile = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatHistoryLimit = 50;
 
-  // Add OpenAI client initialization
-  const openai = new OpenAI({
-    apiKey: API_KEY,
-    dangerouslyAllowBrowser: true
-  });
-
   // Scroll to bottom of chat
   const scrollToBottom = () => {
     if (messagesEndRef.current) {
@@ -356,21 +352,67 @@ export const Profile = () => {
 
   const generateResponse = async (userInput: string): Promise<string> => {
     try {
-      const completion = await openai.chat.completions.create({
-        messages: [
-          {
-            role: "system",
-            content: "You are a helpful and knowledgeable shopping assistant for an e-commerce fashion store. You help customers with product recommendations, sizing, style advice, shipping information, and general shopping queries. Keep responses concise, friendly, and focused on fashion retail. If asked about prices, recommend ranges between $20-$200 for common items. For shipping, mention standard delivery (3-5 days) and express options (1-2 days). Maintain a helpful, professional tone."
-          },
-          {
-            role: "user",
-            content: userInput
-          }
-        ],
-        model: "gpt-3.5-turbo",
-      });
+      const ws = new WebSocket(uri);
+      
+      return new Promise((resolve, reject) => {
+        ws.onopen = () => {
+          const request = {
+            contents: [{
+              parts: [{
+                text: userInput
+              }]
+            }],
+            generationConfig: {
+              temperature: 0.7,
+              topK: 40,
+              topP: 0.95,
+              maxOutputTokens: 1024,
+            },
+            safetySettings: [
+              {
+                category: "HARM_CATEGORY_HARASSMENT",
+                threshold: "BLOCK_MEDIUM_AND_ABOVE"
+              },
+              {
+                category: "HARM_CATEGORY_HATE_SPEECH",
+                threshold: "BLOCK_MEDIUM_AND_ABOVE"
+              },
+              {
+                category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                threshold: "BLOCK_MEDIUM_AND_ABOVE"
+              },
+              {
+                category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+                threshold: "BLOCK_MEDIUM_AND_ABOVE"
+              }
+            ]
+          };
 
-      return completion.choices[0]?.message?.content || "I apologize, but I couldn't process your request at the moment.";
+          ws.send(JSON.stringify({
+            url: uri,
+            headers: {
+              'Content-Type': 'application/json',
+              'x-goog-api-key': API_KEY
+            },
+            body: request
+          }));
+        };
+
+        ws.onmessage = (event) => {
+          const response = JSON.parse(event.data);
+          if (response.candidates && response.candidates[0]?.content?.parts?.[0]?.text) {
+            resolve(response.candidates[0].content.parts[0].text);
+          } else {
+            resolve("I apologize, but I couldn't process your request at the moment.");
+          }
+          ws.close();
+        };
+
+        ws.onerror = (error) => {
+          console.error('WebSocket error:', error);
+          reject("I apologize, but I'm having trouble connecting right now. Please try again later.");
+        };
+      });
     } catch (error) {
       console.error('Error generating response:', error);
       return "I apologize, but I'm having trouble connecting right now. Please try again later.";
