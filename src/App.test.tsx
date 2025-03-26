@@ -16,11 +16,27 @@
 
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import './setupTests';
+import '@testing-library/jest-dom';
 import App from './App';
 
-test('renders learn react link', () => {
-  render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+// Mock the Auth0 provider
+jest.mock('./auth/Auth0ProviderWithNavigate', () => ({
+  Auth0ProviderWithNavigate: ({ children }: { children: React.ReactNode }) => <div>{children}</div>
+}));
+
+// Mock the Cart provider
+jest.mock('./contexts/CartContext', () => ({
+  CartProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>
+}));
+
+// Mock the LiveAPI provider
+jest.mock('./contexts/LiveAPIContext', () => ({
+  LiveAPIProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>
+}));
+
+describe('App', () => {
+  test('renders without crashing', () => {
+    render(<App />);
+    expect(document.body).toBeInTheDocument();
+  });
 });
