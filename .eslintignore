@@ -1,0 +1,10 @@
+src/lib/audio-recorder.ts
+src/lib/audio-streamer.ts
+src/lib/multimodal-live-client.ts
+src/lib/utils.ts
+src/components/ControlTray/ControlTray.tsx
+src/pages/Profile.tsx
+src/types/multimodal-live-types.ts
+build/
+dist/
+node_modules/ 

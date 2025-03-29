@@ -33,7 +33,9 @@ export class AudioStreamer {
   private initialBufferTime: number = 0.1; //0.1 // 100ms initial buffer
   private endOfQueueAudioSource: AudioBufferSourceNode | null = null;
 
-  public onComplete = () => {};
+  public onComplete = () => {
+    // This method is intentionally empty - can be overridden by consumers
+  };
 
   constructor(public context: AudioContext) {
     this.gainNode = this.context.createGain();
