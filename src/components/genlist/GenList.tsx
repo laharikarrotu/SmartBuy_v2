@@ -21,7 +21,7 @@ import {
   ToolCall,
   ToolResponse,
   LiveFunctionResponse,
-} from "../../multimodal-live-types";
+} from "../../types/multimodal-live-types";
 import { List, ListProps } from "./List";
 import { Chips } from "./Chips";
 

@@ -11,6 +11,14 @@ export interface CartItem {
   size?: string;
   originalPrice?: number;
   fit?: string;
+  category: 'clothing' | 'electronics' | 'dog' | 'cat';
+  description?: string;
+  inStock?: boolean;
+  brand?: string;
+  rating?: number;
+  reviews?: number;
+  features?: string[];
+  specifications?: Record<string, string>;
 }
 
 // Define the CartContext interface

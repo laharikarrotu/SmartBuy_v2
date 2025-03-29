@@ -35,15 +35,15 @@ const PopularPicks: Record<string, PickItem[]> = {
       category: "All dog food, any brand",
       image: "https://images.unsplash.com/photo-1623387641168-d9803ddd3f35?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8ZG9nJTIwZm9vZHxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60",
      
-      targetCategory: "dog",
-      link:"/dog"
+      targetCategory: "pets",
+      link:"/pets/dog"
     },
     {
       points: "5X",
       category: "All cat food & treats, any brand",
       image: "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8Y2F0JTIwdHJlYXRzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60",
-      targetCategory: "dog",
-      link:"/dog"
+      targetCategory: "pets",
+      link:"/pets/dog"
     }
   ],
   electronics: [
@@ -85,14 +85,14 @@ const Categories: Record<string, CategoryItem[]> = {
     {
       name: "Dog",
       image: "https://images.unsplash.com/photo-1543466835-00a7907e9de1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Nnx8ZG9nfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60",
-      link: "/dog",
-      category: "dog"
+      link: "/pets/dog",
+      category: "pets"
     },
     {
       name: "Cat",
       image: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8Y2F0fGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60",
-      link: "/dog",
-      category: "dog"
+      link: "/pets/cat",
+      category: "pets"
     }
   ],
   electronics: [
@@ -130,16 +130,16 @@ const Deals: DealItem[] = [
   {
     title: "Save 30% on select dog toys",
     image: "https://images.unsplash.com/photo-1560743641-3914f2c45636?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8ZG9nJTIwdG95c3xlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60",
-    link: "/dog",
+    link: "/pets/dog",
     
-    category: "dog"
+    category: "pets"
   },
   {
     title: "Buy 1, Get 1 50% off cat treats",
     image: "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8Y2F0JTIwdHJlYXRzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
-    link: "/dog",
+    link: "/pets/cat",
     
-    category: "dog"
+    category: "pets"
   },
   {
     title: "Up to 40% off selected smartphones",
@@ -247,20 +247,30 @@ const All: React.FC = () => {
   
   const handleNavigation = (item: any) => {
     if (item.productId) {
-
-      const category = item.targetCategory || item.category || 
-                       (item.productId >= 100 && item.productId < 200 ? 'electronics' : 
-                       item.productId >= 200 ? 'clothing' : 'dog');
+      // Map internal category names to URL paths
+      let urlCategory = item.targetCategory || item.category || '';
       
-      navigate(`/product/${item.productId}`, {
+      // Default mapping based on product ID if no category is provided
+      if (!urlCategory) {
+        if (item.productId >= 100 && item.productId < 200) {
+          urlCategory = 'electronics';
+        } else if (item.productId >= 200) {
+          urlCategory = 'clothing';
+        } else {
+          urlCategory = 'pets';
+        }
+      }
+      
+      // For product detail routes, make sure we're using the right URL structure
+      navigate(`/${urlCategory}/${item.productId}`, {
         state: {
           product: { id: item.productId },
-          category: category
+          category: urlCategory
         }
       });
     } else {
-    
-      navigate(item.link || '/dog');
+      // For non-product links, just navigate to the specified link
+      navigate(item.link || '/pets/dog');
     }
   };
 
@@ -311,7 +321,7 @@ const All: React.FC = () => {
                   Clothing
                 </a>
               </li>
-              <li><a href="#" onClick={(e) => { e.preventDefault(); navigate('/dog'); }}>Today's Deals</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); navigate('/pets/dog'); }}>Today's Deals</a></li>
             </ul>
           </nav>
           <div className="header-actions">

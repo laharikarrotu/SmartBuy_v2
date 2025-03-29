@@ -1,0 +1,121 @@
+@import './variables.scss';
+
+/* Shared styles for all category pages */
+.accessories-page,
+.mens-page,
+.womens-page,
+.hats-page,
+.shirts-page,
+.jeans-page,
+.dresses-page,
+.dog-page,
+.cat-page,
+.pet-supplies-page,
+.smartphones-page,
+.laptops-page,
+.electronics-accessories-page {
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 2rem;
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      color: $primary-color;
+    }
+
+    p {
+      font-size: 1.2rem;
+      color: $text-secondary;
+    }
+  }
+
+  .filters {
+    margin-bottom: 2rem;
+    background-color: $background-light;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+    .filter-group {
+      margin-bottom: 1rem;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        color: $text-primary;
+      }
+
+      .filter-options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+
+        .filter-btn {
+          background-color: $background-white;
+          border: 1px solid $border-color;
+          padding: 0.5rem 1rem;
+          border-radius: 4px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          font-size: 0.9rem;
+
+          &:hover {
+            background-color: $hover-light;
+          }
+
+          &.active {
+            background-color: $primary-color;
+            color: white;
+            border-color: $primary-color;
+          }
+        }
+      }
+    }
+  }
+
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .accessories-page,
+  .mens-page,
+  .womens-page,
+  .hats-page,
+  .shirts-page,
+  .jeans-page,
+  .dresses-page,
+  .dog-page,
+  .cat-page,
+  .pet-supplies-page,
+  .smartphones-page,
+  .laptops-page,
+  .electronics-accessories-page {
+    .page-header {
+      h1 {
+        font-size: 2rem;
+      }
+    }
+
+    .products-grid {
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    }
+  }
+} 

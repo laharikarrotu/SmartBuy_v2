@@ -1,0 +1,152 @@
+@import '../../styles/shared.scss';
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 72px;
+  background: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+
+  @media (max-width: 768px) {
+    height: 64px;
+  }
+
+  &__container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    @media (max-width: 768px) {
+      padding: 0 1rem;
+    }
+  }
+
+  &__left {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  &__logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--smartbuy-blue);
+    text-decoration: none;
+  }
+
+  &__nav {
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  &__nav-item {
+    color: var(--smartbuy-text);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: var(--smartbuy-blue);
+    }
+  }
+
+  &__right {
+    display: flex;
+    gap: 1rem;
+  }
+
+  &__action {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--smartbuy-blue);
+    background: transparent;
+    color: var(--smartbuy-blue);
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: var(--smartbuy-blue);
+      color: white;
+    }
+  }
+}
+
+.footer {
+  background: var(--smartbuy-gray);
+  padding: 4rem 0 2rem;
+  margin-top: auto;
+
+  &__content {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    margin-bottom: 2rem;
+
+    @media (max-width: 768px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (max-width: 480px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__section {
+    h3 {
+      color: var(--smartbuy-text);
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    li {
+      margin-bottom: 0.5rem;
+    }
+
+    a {
+      color: var(--smartbuy-light-text);
+      text-decoration: none;
+      transition: color 0.2s ease;
+
+      &:hover {
+        color: var(--smartbuy-blue);
+      }
+    }
+  }
+
+  &__social {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  &__social-link {
+    color: var(--smartbuy-light-text);
+    text-decoration: none;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: var(--smartbuy-blue);
+    }
+  }
+
+  &__bottom {
+    padding-top: 2rem;
+    border-top: 1px solid var(--smartbuy-dark-gray);
+    text-align: center;
+    color: var(--smartbuy-light-text);
+  }
+} 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
-import { useCart } from '../contexts/CartContext';
+import { useCart, CartItem as ContextCartItem } from '../contexts/CartContext';
 import './PersonalizedPage.scss';
 
 type ProductCategory = 'food' | 'toys' | 'treats' | 'supplies';
@@ -33,15 +33,6 @@ interface RecommendationSection {
   title: string;
   reason: string;
   products: Product[];
-}
-
-interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  image: string;
-  quantity: number;
-  category: ProductCategory;
 }
 
 export default function PersonalizedPage() {
@@ -157,23 +148,16 @@ export default function PersonalizedPage() {
   // Generate recommendations based on cart items
   useEffect(() => {
     if (cartItems.length > 0) {
-      const lastAddedItem = cartItems[cartItems.length - 1] as CartItem & { category: ProductCategory };
+      const lastAddedItem = cartItems[cartItems.length - 1];
       
       // Get category-based recommendations
       const categoryRecommendations = mockPersonalizedProducts.filter(
-        product => product.category === lastAddedItem.category && product.id.toString() !== lastAddedItem.id
+        product => product.id.toString() !== lastAddedItem.id
       );
 
       // Get complementary products
-      const complementaryCategories: Record<ProductCategory, ProductCategory[]> = {
-        food: ['treats', 'toys'],
-        toys: ['treats', 'supplies'],
-        treats: ['toys', 'supplies'],
-        supplies: ['toys', 'treats']
-      };
-
       const complementaryProducts = mockPersonalizedProducts.filter(
-        product => complementaryCategories[lastAddedItem.category]?.includes(product.category)
+        product => product.id.toString() !== lastAddedItem.id
       );
 
       setRecommendedProducts([
@@ -288,13 +272,20 @@ export default function PersonalizedPage() {
                 className="add-to-cart"
                 onClick={(e) => {
                   e.stopPropagation();
-                  addToCart({
+                  const cartItem: ContextCartItem = {
                     id: product.id.toString(),
                     name: product.name,
                     price: product.price,
                     image: product.image,
-                    quantity: 1
-                  });
+                    quantity: 1,
+                    category: 'dog',
+                    description: product.description,
+                    rating: product.rating,
+                    reviews: product.reviews,
+                    inStock: true,
+                    brand: "SmartPet"
+                  };
+                  addToCart(cartItem);
                 }}
               >
                 Add to Cart
@@ -353,13 +344,20 @@ export default function PersonalizedPage() {
                         className="add-to-cart"
                         onClick={(e) => {
                           e.stopPropagation();
-                          addToCart({
+                          const cartItem: ContextCartItem = {
                             id: product.id.toString(),
                             name: product.name,
                             price: product.price,
                             image: product.image,
-                            quantity: 1
-                          });
+                            quantity: 1,
+                            category: 'dog',
+                            description: product.description,
+                            rating: product.rating,
+                            reviews: product.reviews,
+                            inStock: true,
+                            brand: "SmartPet"
+                          };
+                          addToCart(cartItem);
                         }}
                       >
                         Add to Cart

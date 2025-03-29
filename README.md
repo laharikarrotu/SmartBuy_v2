@@ -1,4 +1,44 @@
+# SmartApp - AI-Powered E-commerce Platform
 
+This is an AI-powered e-commerce application that provides an interactive shopping experience.
+
+## Project Structure
+
+The project follows a simplified structure:
+
+```
+SmartApp/
+├── public/            # Static assets and HTML entry
+├── src/               # Source code
+│   ├── components/    # Reusable UI components
+│   ├── pages/         # Page components
+│   ├── hooks/         # Custom React hooks
+│   ├── contexts/      # React context providers
+│   ├── assets/        # Static assets (images, data)
+│   ├── styles/        # Global styles
+│   ├── utils/         # Utility functions
+│   └── app.js         # Main application component
+├── config/            # Configuration files
+├── docs/              # Documentation
+└── package.json       # Dependencies and scripts
+```
+
+## Getting Started
+
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Start the development server: `npm start`
+
+## Features
+
+- AI-powered shopping assistant
+- Voice search
+- Product recommendations
+- Responsive design
+
+## License
+
+See LICENSE file for details.
 
 # Understanding the Pet Store Assistant Application Flow
 

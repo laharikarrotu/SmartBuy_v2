@@ -36,7 +36,7 @@ import {
   ToolCallCancellation,
   ToolResponseMessage,
   type LiveConfig,
-} from "../multimodal-live-types";
+} from "../types/multimodal-live-types";
 import { blobToJSON, base64ToArrayBuffer } from "./utils";
 
 /**
@@ -69,6 +69,9 @@ export class MultimodalLiveClient extends EventEmitter<MultimodalLiveClientEvent
   public ws: WebSocket | null = null;
   protected config: LiveConfig | null = null;
   public url: string = "";
+  private state = "disconnected";
+  private isReconnecting = false;
+
   public getConfig() {
     return { ...this.config };
   }

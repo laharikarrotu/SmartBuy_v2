@@ -1,26 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 300">
-  <!-- Background -->
-  <rect width="500" height="300" fill="white" />
-  
-  <!-- Brain shape (left half) -->
-  <path d="M170,110 C160,100 155,90 155,80 C155,65 165,55 180,55 C190,55 200,60 205,70 C210,60 220,55 230,55 C245,55 255,65 255,80 C255,90 250,100 240,110 C250,120 255,130 255,140 C255,155 245,165 230,165 C220,165 210,160 205,150 C200,160 190,165 180,165 C165,165 155,155 155,140 C155,130 160,120 170,110 Z" fill="#6750A4" />
-  
-  <!-- Shopping cart (right half) -->
-  <circle cx="295" cy="155" r="10" fill="#6750A4" />
-  <circle cx="335" cy="155" r="10" fill="#6750A4" />
-  <path d="M270,85 L360,85 L345,135 L280,135 Z" fill="none" stroke="#6750A4" stroke-width="8" />
-  <path d="M290,85 L290,60" stroke="#6750A4" stroke-width="8" />
-  <path d="M320,85 L320,60" stroke="#6750A4" stroke-width="8" />
-  <path d="M350,85 L350,60" stroke="#6750A4" stroke-width="8" />
-  
-  <!-- Connection lines between brain and cart -->
-  <path d="M240,90 L270,90" stroke="#6750A4" stroke-width="3" stroke-dasharray="5,5" />
-  <path d="M240,110 L270,110" stroke="#6750A4" stroke-width="3" stroke-dasharray="5,5" />
-  <path d="M240,130 L270,130" stroke="#6750A4" stroke-width="3" stroke-dasharray="5,5" />
-  
-  <!-- Logo text -->
-  <text x="250" y="210" font-family="Arial, sans-serif" font-size="40" font-weight="bold" text-anchor="middle" fill="#6750A4">SmartBuy</text>
-  
-  <!-- Tagline -->
-  <text x="250" y="240" font-family="Arial, sans-serif" font-size="16" text-anchor="middle" fill="#666666">Intelligent Shopping Decisions</text>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="300" height="200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Base container -->
+  <g transform="translate(10, 10)">
+    <!-- Shopping cart stylized icon -->
+    <g transform="translate(75, 0)">
+      <!-- Main cart body in blue gradient -->
+      <path d="M30,60 L120,60 L110,20 L40,20 Z" fill="#00467f"/>
+      <path d="M50,60 L140,60 L130,20 L60,20 Z" fill="#2d85c3"/>
+      
+      <!-- Diamond shape on top -->
+      <rect x="120" y="5" width="24" height="24" fill="#2d85c3" transform="rotate(45, 132, 17)"/>
+      
+      <!-- Wheels -->
+      <circle cx="70" cy="75" r="10" fill="#5baade"/>
+      <circle cx="120" cy="75" r="10" fill="#5baade"/>
+    </g>
+    
+    <!-- SmartBuy text -->
+    <g transform="translate(0, 130)">
+      <text x="150" y="0" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#00467f" text-anchor="middle">SMARTBUY</text>
+    </g>
+  </g>
 </svg>

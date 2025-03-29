@@ -111,7 +111,16 @@ const InStore: React.FC = () => {
       name: product.name,
       price: product.price,
       image: product.image,
-      quantity: 1
+      quantity: 1,
+      category: 'clothing',
+      description: product.name,
+      inStock: true,
+      brand: '',
+      rating: 0,
+      reviews: product.reviews,
+      features: [],
+      specifications: {},
+      originalPrice: product.originalPrice
     });
   };
 

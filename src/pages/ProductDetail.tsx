@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useCart } from '../contexts/CartContext';
 import { useAuth0 } from '@auth0/auth0-react';
+import { useSavedItems } from '../contexts/SavedItemsContext';
+import { findProductByCategoryAndId } from '../data/products';
 import './ProductDetail.scss';
 
 // Define the product data structure
@@ -43,8 +45,9 @@ const productData = [
 const ProductDetail: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { id } = useParams();
+  const { category, id } = useParams<{ category: string; id: string }>();
   const { addToCart } = useCart();
+  const { addToSavedItems, isSaved } = useSavedItems();
   const { isAuthenticated, loginWithPopup } = useAuth0();
   
   // Get product from location state or find by ID
@@ -120,8 +123,78 @@ const ProductDetail: React.FC = () => {
   }, [isAuthenticated]);
 
   if (!product) {
-    return null; // or a loading spinner
+    return (
+      <div className="product-detail-page">
+        <div className="container">
+          <div className="not-found">
+            <h1>Product Not Found</h1>
+            <p>The product you're looking for doesn't exist.</p>
+            <button onClick={() => navigate('/')} className="back-button">
+              Return to Home
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   }
+
+  const handleAddToCart = () => {
+    // Ensure the category is one of the allowed types for CartItem
+    const categoryMap: Record<string, 'electronics' | 'clothing' | 'dog' | 'cat'> = {
+      electronics: 'electronics',
+      clothing: 'clothing',
+      dog: 'dog',
+      cat: 'cat',
+      pets: 'dog', // Default pet categories to 'dog'
+      // Add any other mappings as needed
+    };
+    
+    // Get the properly typed category or default to 'electronics'
+    const typedCategory = categoryMap[category as string] || 'electronics';
+    
+    const productToAdd = {
+      id: product.id || id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      quantity: quantity,
+      category: typedCategory, // Using the properly typed category
+      description: product.description || product.name,
+      inStock: true,
+      brand: product.brand || '',
+      rating: product.rating || 4.5,
+      reviews: product.reviews || 0
+    };
+    
+    addToCart(productToAdd);
+    
+    // Show success notification
+    const notification = document.createElement('div');
+    notification.className = 'cart-notification';
+    notification.textContent = `${productToAdd.name} added to cart!`;
+    document.body.appendChild(notification);
+    
+    // Remove notification after 3 seconds
+    setTimeout(() => {
+      notification.classList.add('fade-out');
+      setTimeout(() => {
+        document.body.removeChild(notification);
+      }, 300);
+    }, 3000);
+  };
+
+  const handleSave = () => {
+    addToSavedItems({
+      id: parseInt(product.id),
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      category: product.category,
+      description: product.description,
+      rating: product.rating,
+      reviews: product.reviews
+    });
+  };
 
   return (
     <div className="product-detail-page">
@@ -218,13 +291,29 @@ const ProductDetail: React.FC = () => {
                 <a href="#">Change store</a>
               </div>
 
-              <div className="quantity-selector">
-                <label>Quantity</label>
-                <select value={quantity} onChange={(e) => setQuantity(Number(e.target.value))}>
-                  {[...Array(10)].map((_, i) => (
-                    <option key={i + 1} value={i + 1}>{i + 1}</option>
-                  ))}
-                </select>
+              <div className="add-to-cart-section">
+                <div className="quantity-selector">
+                  <button 
+                    className="qty-btn"
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  >-</button>
+                  <input 
+                    type="number" 
+                    value={quantity} 
+                    onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                    min="1"
+                  />
+                  <button 
+                    className="qty-btn"
+                    onClick={() => setQuantity(quantity + 1)}
+                  >+</button>
+                </div>
+                <button 
+                  className="add-to-cart-btn btn-add-to-cart"
+                  onClick={handleAddToCart}
+                >
+                  <span className="icon">🛒</span> Add to Cart
+                </button>
               </div>
 
               <div className="points-earned">
@@ -235,51 +324,12 @@ const ProductDetail: React.FC = () => {
             </div>
           </div>
 
-          <div className="button-group">
+          <div className="product-actions">
             <button 
-              className="add-to-cart-btn" 
-              onClick={() => addToCart({...product, quantity})}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '10px',
-                width: '100%',
-                padding: '14px 28px',
-                background: '#0055a6',
-                color: 'white',
-                border: 'none',
-                borderRadius: '6px',
-                fontSize: '1.1rem',
-                fontWeight: '600',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                boxShadow: '0 2px 8px rgba(0, 85, 166, 0.25)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.5px',
-                position: 'relative',
-                overflow: 'hidden'
-              }}
-              onMouseEnter={(e) => {
-                const btn = e.currentTarget;
-                btn.style.background = '#004485';
-                btn.style.boxShadow = '0 4px 12px rgba(0, 85, 166, 0.35)';
-                btn.style.transform = 'translateY(-1px)';
-              }}
-              onMouseLeave={(e) => {
-                const btn = e.currentTarget;
-                btn.style.background = '#0055a6';
-                btn.style.boxShadow = '0 2px 8px rgba(0, 85, 166, 0.25)';
-                btn.style.transform = 'translateY(0)';
-              }}
-              onMouseDown={(e) => {
-                const btn = e.currentTarget;
-                btn.style.transform = 'translateY(1px)';
-                btn.style.boxShadow = '0 2px 6px rgba(0, 85, 166, 0.2)';
-              }}
+              className={`save-button ${isSaved(parseInt(product.id)) ? 'saved' : ''}`}
+              onClick={handleSave}
             >
-              <span style={{ fontSize: '1.2rem' }}>🛒</span>
-              <span>Add to cart</span>
+              {isSaved(parseInt(product.id)) ? 'Saved' : 'Save'}
             </button>
           </div>
         </div>
