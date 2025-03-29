@@ -96,7 +96,7 @@ export type LiveIncomingMessage =
   | ServerContentMessage
   | SetupCompleteMessage;
 
-export type SetupCompleteMessage = { setupComplete: {} };
+export type SetupCompleteMessage = { setupComplete: Record<string, never> };
 
 export type ServerContentMessage = {
   serverContent: ServerContent;
@@ -237,6 +237,14 @@ export function isLiveFunctionResponse(
 }
 
 export const isToolCallCancellation = (
-  a: unknown,
-): a is ToolCallCancellationMessage["toolCallCancellation"] =>
-  typeof a === "object" && Array.isArray((a as any).ids);
+  data: unknown
+): data is ToolCallCancellation => {
+  const obj = data as Record<string, unknown>;
+  return (
+    !!data &&
+    typeof data === "object" &&
+    data !== null &&
+    "ids" in obj &&
+    Array.isArray(obj.ids)
+  );
+};
