@@ -60,6 +60,7 @@ const CategoryTemplate: React.FC<CategoryTemplateProps> = ({
   const [filterValues, setFilterValues] = useState<Record<string, string>>(
     filters.reduce((acc, filter) => ({ ...acc, [filter.name]: 'all' }), {})
   );
+  const [activeFilters, setActiveFilters] = useState<string[]>([]);
 
   const handleProductClick = (productId: string, product: BaseProduct) => {
     // Navigate to the product detail page with the correct URL pattern: /:category/:id
@@ -109,6 +110,27 @@ const CategoryTemplate: React.FC<CategoryTemplateProps> = ({
 
   const handleFilterChange = (filterName: string, value: string) => {
     setFilterValues({ ...filterValues, [filterName]: value });
+    
+    // Update active filters list
+    if (value !== 'all') {
+      if (!activeFilters.includes(filterName)) {
+        setActiveFilters([...activeFilters, filterName]);
+      }
+    } else {
+      setActiveFilters(activeFilters.filter(f => f !== filterName));
+    }
+  };
+
+  const handleFilterSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    // Reset select to default after selection
+    const value = e.target.value;
+    if (value === 'default') return;
+    
+    const [filterName, filterValue] = value.split('|');
+    handleFilterChange(filterName, filterValue);
+    
+    // Reset the select to the default option
+    e.target.value = 'default';
   };
 
   // Apply all filters to products
@@ -154,22 +176,50 @@ const CategoryTemplate: React.FC<CategoryTemplateProps> = ({
         </div>
 
         <div className="filters">
-          {filters.map(filter => (
-            <div className="filter-group" key={filter.name}>
-              <label>{filter.label}</label>
-              <div className="filter-options">
-                {filter.options.map(option => (
-                  <button
-                    key={option}
-                    className={`filter-btn ${filterValues[filter.name] === option ? 'active' : ''}`}
-                    onClick={() => handleFilterChange(filter.name, option)}
-                  >
-                    {option === 'all' ? `All ${filter.label}s` : option}
-                  </button>
-                ))}
-              </div>
+          <div className="filter-dropdown">
+            <select 
+              className="filter-select"
+              onChange={handleFilterSelect}
+              defaultValue="default"
+            >
+              <option value="default" disabled>Filter Products</option>
+              {filters.map(filter => (
+                <optgroup key={filter.name} label={filter.label}>
+                  {filter.options.map(option => (
+                    <option 
+                      key={`${filter.name}-${option}`} 
+                      value={`${filter.name}|${option}`}
+                    >
+                      {option === 'all' ? `All ${filter.label}s` : option}
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
+            
+            {/* Display active filters */}
+            <div className="active-filters">
+              {Object.entries(filterValues).map(([filterName, value]) => {
+                if (value === 'all') return null;
+                
+                const filter = filters.find(f => f.name === filterName);
+                if (!filter) return null;
+                
+                return (
+                  <span key={filterName} className="filter-tag">
+                    {filter.label}: {value}
+                    <button 
+                      className="remove-filter"
+                      onClick={() => handleFilterChange(filterName, 'all')}
+                      aria-label={`Remove ${filter.label} filter`}
+                    >
+                      ×
+                    </button>
+                  </span>
+                );
+              })}
             </div>
-          ))}
+          </div>
         </div>
 
         <div className="products-grid">

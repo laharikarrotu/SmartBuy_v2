@@ -14,7 +14,7 @@ const productData = [
     sizes: "4 sizes",
     reviews: 2693,
     price: 89.99,
-    image: "https://s7d2.scene7.com/is/image/PetSmart/5339575?$sclp-prd-main_large$"
+    image: "https://s7d2.scene7.com/is/image/PetSmart/5339575?fmt=webp&wid=80&hei=80"
   },
   {
     id: 2,
@@ -22,7 +22,7 @@ const productData = [
     sizes: "4 sizes",
     reviews: 768,
     price: 83.99,
-    image: "https://s7d2.scene7.com/is/image/PetSmart/5154856?$sclp-prd-main_large$"
+    image: "https://s7d2.scene7.com/is/image/PetSmart/5351453?$sclp-prd-main_large$&fmt=webp&qlt=80"
   },
   {
     id: 3,
@@ -30,7 +30,7 @@ const productData = [
     sizes: "5 sizes",
     reviews: 937,
     price: 64.99,
-    image: "https://s7d2.scene7.com/is/image/PetSmart/5066968?$sclp-prd-main_large$"
+    image: "https://s7d2.scene7.com/is/image/PetSmart/5173388?$sclp-prd-main_large$&fmt=webp&qlt=80"
   },
   {
     id: 4,
@@ -38,7 +38,7 @@ const productData = [
     sizes: "2 sizes",
     reviews: 760,
     price: 59.99,
-    image: "https://s7d2.scene7.com/is/image/PetSmart/5173207?$sclp-prd-main_large$"
+    image: "https://s7d2.scene7.com/is/image/PetSmart/5337875?$sclp-prd-main_large$&fmt=webp&qlt=80"
   }
 ];
 
