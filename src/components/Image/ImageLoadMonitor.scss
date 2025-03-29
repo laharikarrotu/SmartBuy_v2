@@ -1,0 +1,137 @@
+.image-load-monitor {
+  position: fixed;
+  z-index: 9999;
+  background-color: rgba(255, 255, 255, 0.95);
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  padding: 0;
+  width: 260px;
+  font-size: 14px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  
+  &.top-right {
+    top: 20px;
+    right: 20px;
+  }
+  
+  &.top-left {
+    top: 20px;
+    left: 20px;
+  }
+  
+  &.bottom-right {
+    bottom: 20px;
+    right: 20px;
+  }
+  
+  &.bottom-left {
+    bottom: 20px;
+    left: 20px;
+  }
+  
+  &.minimized {
+    width: auto;
+    padding: 0;
+    overflow: hidden;
+    
+    .minimized-view {
+      padding: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #f8f9fa;
+      border-radius: 3px;
+      
+      &:hover {
+        background-color: #e9ecef;
+      }
+      
+      .rate-indicator {
+        font-weight: bold;
+        
+        &.warning {
+          color: #dc3545;
+        }
+      }
+    }
+  }
+  
+  .monitor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    border-radius: 4px 4px 0 0;
+    
+    h3 {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    
+    .monitor-controls {
+      display: flex;
+      
+      button {
+        background: none;
+        border: none;
+        font-size: 16px;
+        line-height: 1;
+        padding: 2px 5px;
+        cursor: pointer;
+        margin-left: 5px;
+        
+        &:hover {
+          color: #007bff;
+        }
+        
+        &.close-btn:hover {
+          color: #dc3545;
+        }
+      }
+    }
+  }
+  
+  .monitor-body {
+    padding: 12px;
+    
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+      
+      .stat-label {
+        font-weight: 500;
+      }
+      
+      .stat-value {
+        font-family: monospace;
+        font-weight: bold;
+        
+        &.success {
+          color: #28a745;
+        }
+        
+        &.failures {
+          color: #dc3545;
+        }
+        
+        &.rate {
+          color: #0d6efd;
+          
+          &.warning {
+            color: #dc3545;
+          }
+        }
+      }
+    }
+  }
+} 

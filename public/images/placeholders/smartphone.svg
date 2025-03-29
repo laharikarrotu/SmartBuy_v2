@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="400" height="400" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="400" height="400" fill="#f5f5f5" />
+  
+  <!-- Smartphone Frame -->
+  <rect x="120" y="50" width="160" height="300" rx="20" ry="20" fill="#e6e6e6" stroke="#d1d1d1" stroke-width="4"/>
+  
+  <!-- Screen -->
+  <rect x="130" y="70" width="140" height="240" rx="5" ry="5" fill="#b3e5fc"/>
+  
+  <!-- App Icons (simplified) -->
+  <rect x="145" y="100" width="30" height="30" rx="5" ry="5" fill="#90caf9"/>
+  <rect x="185" y="100" width="30" height="30" rx="5" ry="5" fill="#f48fb1"/>
+  <rect x="225" y="100" width="30" height="30" rx="5" ry="5" fill="#a5d6a7"/>
+  
+  <rect x="145" y="140" width="30" height="30" rx="5" ry="5" fill="#ffcc80"/>
+  <rect x="185" y="140" width="30" height="30" rx="5" ry="5" fill="#b39ddb"/>
+  <rect x="225" y="140" width="30" height="30" rx="5" ry="5" fill="#ef9a9a"/>
+  
+  <!-- Home Button -->
+  <circle cx="200" cy="330" r="15" fill="#f5f5f5" stroke="#d1d1d1" stroke-width="2"/>
+  
+  <!-- Text -->
+  <text x="200" y="50" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="#757575">
+    Smartphone
+  </text>
+</svg> 

@@ -11,6 +11,11 @@ interface Product extends BaseProduct {
   features: string[];
 }
 
+// Fallback image for when a smartphone image fails to load
+const getSmartphoneFallbackImage = (id: string) => {
+  return `/images/placeholders/smartphone.svg`;
+};
+
 const smartphones: Product[] = [
   {
     id: 'iphone-15-pro',
@@ -23,7 +28,7 @@ const smartphones: Product[] = [
     features: ['A17 Pro Chip', 'Pro Camera System', 'Dynamic Island', 'USB-C'],
     originalPrice: 999.00,
     price: 999.00,
-    image: 'https://images.unsplash.com/photo-1695048152835-5743f911bce5?w=400',
+    image: 'https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6507/6507473_sd.jpg;maxHeight=400;maxWidth=448;format=webp',
     category: 'electronics',
     description: 'The most powerful iPhone with a pro camera system and the A17 Pro chip',
     rating: 4.8,
@@ -41,7 +46,7 @@ const smartphones: Product[] = [
     features: ['Snapdragon 8 Gen 3', '200MP Camera', 'S Pen', 'Galaxy AI'],
     originalPrice: 1199.99,
     price: 1199.99,
-    image: 'https://images.unsplash.com/photo-1707842147874-2b08b72a266f?w=400',
+    image: 'https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6582/6582841_sd.jpg;maxHeight=427;maxWidth=640',
     category: 'electronics',
     description: 'Flagship smartphone with advanced Galaxy AI features and a powerful camera system',
     rating: 4.7,
@@ -59,7 +64,7 @@ const smartphones: Product[] = [
     features: ['Google Tensor G3', 'Improved Camera System', 'Google AI', 'Super Actua Display'],
     originalPrice: 999.00,
     price: 849.00,
-    image: 'https://images.unsplash.com/photo-1698170922906-8e6c0f7a8ecf?w=400',
+    image: 'https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6580/6580453_sd.jpg;maxHeight=427;maxWidth=640',
     category: 'electronics',
     description: 'The most refined Pixel with an advanced camera and Google AI features',
     rating: 4.6,
@@ -77,7 +82,7 @@ const smartphones: Product[] = [
     features: ['Snapdragon 8 Gen 3', 'Hasselblad Camera', '100W Fast Charging', 'LPTO AMOLED'],
     originalPrice: 899.99,
     price: 799.99,
-    image: 'https://images.unsplash.com/photo-1706855695836-edd608ffdf5d?w=400',
+    image: 'https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6554/6554719_sd.jpg;maxHeight=427;maxWidth=640',
     category: 'electronics',
     description: 'Fast and smooth flagship with incredible battery life and charging speed',
     rating: 4.7,
@@ -95,7 +100,7 @@ const smartphones: Product[] = [
     features: ['Snapdragon 8 Gen 2', '50MP Camera System', '125W Fast Charging', 'Water Resistant'],
     originalPrice: 899.99,
     price: 699.99,
-    image: 'https://images.unsplash.com/photo-1695637453779-2d025e0f5547?w=400',
+    image: 'https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6509/6509837_sd.jpg;maxHeight=427;maxWidth=640',
     category: 'electronics',
     description: 'Premium smartphone with flagship specs at a competitive price',
     rating: 4.5,
@@ -113,7 +118,7 @@ const smartphones: Product[] = [
     features: ['Snapdragon 8+ Gen 1', 'Glyph Interface', 'Clean Software', '50MP Dual Camera'],
     originalPrice: 699.00,
     price: 599.00,
-    image: 'https://images.unsplash.com/photo-1691835158318-3e132ae0c7c6?w=400',
+    image: 'https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6569/6569855_sd.jpg;maxHeight=900;maxWidth=600',
     category: 'electronics',
     description: 'Unique smartphone with a distinctive design and Glyph interface',
     rating: 4.3,

@@ -53,6 +53,9 @@ interface MultimodalLiveClientEventTypes {
   turncomplete: () => void;
   toolcall: (toolCall: ToolCall) => void;
   toolcallcancellation: (toolcallCancellation: ToolCallCancellation) => void;
+  speechstart: () => void;
+  speechend: () => void;
+  response: (response: { text: string }) => void;
 }
 
 export type MultimodalLiveAPIClientConnection = {

@@ -2,12 +2,14 @@
  * Copyright 2024 Google LLC
  * Licensed under the Apache License, Version 2.0
  */
-import React, { memo, useEffect, useState } from 'react';
+import React, { memo, useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useLiveAPIContext } from '../../contexts/LiveAPIContext';
 import { useCart, CartItem } from '../../contexts/CartContext';
 import { type Tool, SchemaType } from "@google/generative-ai";
+import { useApp } from '../../contexts/AppContext';
 import './NavAssistant.scss';
+import { products as allProducts } from '../../data/products';
 
 interface Product {
   id: string;
@@ -29,24 +31,10 @@ interface Product {
   shipping?: string;
 }
 
-interface FunctionCall {
-  name: string;
-  args?: {
-    route?: string;
-    productId?: string;
-    fit?: string;
-    size?: string;
-    method?: string;
-    action?: string;
-    category?: string;
-    isRewardsMember?: boolean;
-    name?: string;
-    field?: string;
-    value?: string;
-    phoneNumber?: string;
-    code?: string;
-    inseam?: string;
-  };
+interface Message {
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: Date;
 }
 
 const systemInstructionObject = {
@@ -396,7 +384,37 @@ const NavAssistantComponent = () => {
   const { client, setConfig, connected } = useLiveAPIContext();
   const { addToCart } = useCart();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { isNavAssistantOpen, toggleNavAssistant } = useApp();
+  
   const [isListening, setIsListening] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      role: 'assistant',
+      content: 'Hi! I\'m your SmartBuy shopping assistant. How can I help you today?',
+      timestamp: new Date()
+    }
+  ]);
+  const [inputValue, setInputValue] = useState('');
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Scroll to bottom of chat when messages update
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages, isNavAssistantOpen]);
+
+  // Focus input field when chat is opened
+  useEffect(() => {
+    if (isNavAssistantOpen && inputRef.current) {
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 300);
+    }
+  }, [isNavAssistantOpen]);
 
   // Set up initial config
   useEffect(() => {
@@ -430,7 +448,7 @@ const NavAssistantComponent = () => {
     });
   }, [setConfig]);
 
-  // Handle speech recognition
+  // Handle speech recognition and status
   useEffect(() => {
     if (!client) return;
 
@@ -446,14 +464,32 @@ const NavAssistantComponent = () => {
       setIsListening(false);
     };
 
+    // Custom event handlers for speech events 
+    const handleSpeechStart = () => {
+      setIsSpeaking(true);
+    };
+
+    const handleSpeechEnd = () => {
+      setIsSpeaking(false);
+    };
+
+    // Standard events from the MultimodalLiveClientEventTypes interface
     client.on("toolcall", handleStart);
     client.on("turncomplete", handleEnd);
     client.on("interrupted", handleInterrupt);
+    
+    // Now these events are properly typed in the interface
+    client.on("speechstart", handleSpeechStart);
+    client.on("speechend", handleSpeechEnd);
 
     return () => {
       client.off("toolcall", handleStart);
       client.off("turncomplete", handleEnd);
       client.off("interrupted", handleInterrupt);
+      
+      // Remove custom events
+      client.off("speechstart", handleSpeechStart);
+      client.off("speechend", handleSpeechEnd);
     };
   }, [client]);
 
@@ -464,12 +500,168 @@ const NavAssistantComponent = () => {
         client.send([{
           text: "Are you a rewards member?"
         }]);
+        
+        // Add a new message to the chat
+        setMessages(prev => [
+          ...prev,
+          {
+            role: 'assistant',
+            content: "I notice you're viewing a product. Are you a rewards member? You could save 20% on your purchase today!",
+            timestamp: new Date()
+          }
+        ]);
+        
+        // Open the chat panel
+        if (!isNavAssistantOpen) {
+          toggleNavAssistant();
+        }
       }
     };
 
     document.addEventListener('rewardsPromptFade', handleRewardsPrompt);
     return () => document.removeEventListener('rewardsPromptFade', handleRewardsPrompt);
-  }, [client, connected]);
+  }, [client, connected, isNavAssistantOpen, toggleNavAssistant]);
+
+  // Handle keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Alt + A to toggle the assistant
+      if (e.altKey && e.key === 'a') {
+        toggleNavAssistant();
+      }
+      
+      // Escape to close the assistant if it's open
+      if (e.key === 'Escape' && isNavAssistantOpen) {
+        toggleNavAssistant();
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isNavAssistantOpen, toggleNavAssistant]);
+
+  // Handle client responses for chat
+  useEffect(() => {
+    if (!client) return;
+    
+    const handleResponse = (response: { text: string }) => {
+      if (response.text) {
+        setMessages(prev => [
+          ...prev,
+          {
+            role: 'assistant',
+            content: response.text,
+            timestamp: new Date()
+          }
+        ]);
+      }
+    };
+    
+    // Now properly typed
+    client.on('response', handleResponse);
+    
+    return () => {
+      client.off('response', handleResponse);
+    };
+  }, [client]);
+
+  // Helper function to find product by ID pattern or name
+  const findProductInCategory = (productId: string, productName?: string): { category: string, id: string } | null => {
+    console.log(`Searching for product: ${productId}, name: ${productName || 'not provided'}`);
+    
+    // Helper to check if ID matches common patterns
+    const matchesCategoryPattern = (id: string) => {
+      // Check for electronics patterns
+      if (id.includes('iphone') || id.includes('samsung') || 
+          id.includes('pixel') || id.includes('oneplus') ||
+          id.includes('smartphone') || id.includes('laptop')) {
+        return 'electronics';
+      }
+      
+      // Check for clothing patterns
+      if (id.includes('jeans') || id.includes('shirt') || 
+          id.includes('dress') || id.includes('hat') ||
+          id.includes('clothing')) {
+        return 'clothing';
+      }
+      
+      // Check for pet products patterns
+      if (id.startsWith('d') || id.includes('dog') || 
+          id.includes('purina') || id.includes('kong')) {
+        return 'pets/dog';
+      }
+      
+      if (id.startsWith('c') || id.includes('cat')) {
+        return 'pets/cat';
+      }
+      
+      return null;
+    };
+    
+    // First try to match by simple pattern
+    const categoryMatch = matchesCategoryPattern(productId.toLowerCase());
+    if (categoryMatch) {
+      console.log(`Found category match by pattern: ${categoryMatch}`);
+      return { category: categoryMatch, id: productId };
+    }
+    
+    // Try to look up known product IDs
+    // This could be enhanced to search through all product data in your app
+    const knownProducts: Record<string, { category: string, id: string }> = {
+      // Electronics
+      'iphone-15-pro': { category: 'electronics', id: 'iphone-15-pro' },
+      'samsung-galaxy-s24': { category: 'electronics', id: 'samsung-galaxy-s24' },
+      'google-pixel-8': { category: 'electronics', id: 'google-pixel-8' },
+      'oneplus-12': { category: 'electronics', id: 'oneplus-12' },
+      
+      // Clothing
+      'slim-jeans': { category: 'clothing', id: 'slim-jeans' },
+      'straight-jeans': { category: 'clothing', id: 'straight-jeans' },
+      'relaxed-jeans': { category: 'clothing', id: 'relaxed-jeans' },
+      'skinny-jeans-women': { category: 'clothing', id: 'skinny-jeans-women' },
+      
+      // Dog products
+      'd1': { category: 'pets/dog', id: 'd1' },
+      'd2': { category: 'pets/dog', id: 'd2' },
+      'd3': { category: 'pets/dog', id: 'd3' },
+      'd4': { category: 'pets/dog', id: 'd4' },
+      
+      // Add more known product IDs as needed
+    };
+    
+    if (knownProducts[productId]) {
+      console.log(`Found product in known products map: ${productId}`);
+      return knownProducts[productId];
+    }
+    
+    // If we have a product name, try to do a fuzzy search on it
+    if (productName) {
+      const lowerName = productName.toLowerCase();
+      
+      // Check for common product names
+      if (lowerName.includes('iphone') || lowerName.includes('samsung') || 
+          lowerName.includes('pixel') || lowerName.includes('oneplus')) {
+        console.log(`Found by product name match (electronics): ${productName}`);
+        return { category: 'electronics', id: productId };
+      }
+      
+      if (lowerName.includes('jeans') || lowerName.includes('shirt') || 
+          lowerName.includes('dress') || lowerName.includes('hat')) {
+        console.log(`Found by product name match (clothing): ${productName}`);
+        return { category: 'clothing', id: productId };
+      }
+      
+      if (lowerName.includes('dog') || lowerName.includes('purina') || 
+          lowerName.includes('kong')) {
+        console.log(`Found by product name match (pets/dog): ${productName}`);
+        return { category: 'pets/dog', id: productId };
+      }
+    }
+    
+    // If all else fails, default to electronics as a fallback
+    console.log(`No specific match found, defaulting to electronics category`);
+    return { category: 'electronics', id: productId };
+  };
 
   // Handle tool calls
   useEffect(() => {
@@ -482,26 +674,38 @@ const NavAssistantComponent = () => {
             case "navigate":
               if (fCall.args?.route) {
                 let route = fCall.args.route;
+                
+                // Special handling for product navigation
                 if (fCall.args?.productId) {
-                  // Handle category-specific product routes
-                  if (fCall.args?.category) {
-                    if (fCall.args.category === 'personalized') {
-                      route = `/personalized/${fCall.args.productId}`;
-                    } else {
-                      route = `/${fCall.args.category}/${fCall.args.productId}`;
-                    }
-                  } else {
-                    // Try to find the product in our data
-                    const product = Object.values(products)
-                      .flat()
-                      .find(p => p.id === fCall.args.productId);
-                    
-                    if (product) {
-                      route = `/${product.category}/${product.id}`;
+                  const productId = fCall.args.productId;
+                  let category = fCall.args?.category;
+                  const productName = fCall.args?.name;
+                  
+                  console.log(`Navigating to product: ${productId} in category: ${category}, name: ${productName || 'not provided'}`);
+                  
+                  // If category is not provided, try to find it
+                  if (!category) {
+                    const productInfo = findProductInCategory(productId, productName);
+                    if (productInfo) {
+                      category = productInfo.category;
                     }
                   }
+                  
+                  // Create the correct route based on category
+                  if (category === 'personalized') {
+                    route = `/personalized/${productId}`;
+                  } else if (category?.includes('/')) {
+                    // For nested paths like 'pets/dog'
+                    route = `/${category}/${productId}`;
+                  } else {
+                    route = `/${category || 'electronics'}/${productId}`;
+                  }
+                  
+                  console.log(`Resolved route: ${route}`);
                 }
                 
+                // Log the final route for debugging
+                console.log(`Navigating to: ${route}`);
                 navigate(route);
                 
                 if (fCall.args?.response) {
@@ -512,7 +716,33 @@ const NavAssistantComponent = () => {
 
             case "addToCart":
               try {
-                // Find the add to cart button based on the current page
+                // First check if we have product details in the args
+                if (fCall.args?.productId && fCall.args?.name && fCall.args?.price && fCall.args?.image) {
+                  // Add directly to cart with provided details
+                  const cartItem: CartItem = {
+                    id: fCall.args.productId,
+                    name: fCall.args.name,
+                    price: fCall.args.price,
+                    image: fCall.args.image,
+                    quantity: fCall.args.quantity || 1,
+                    category: fCall.args.category || 'electronics',
+                    description: fCall.args.description || fCall.args.name,
+                    inStock: true
+                  };
+                  
+                  addToCart(cartItem);
+                  
+                  // Send confirmation
+                  if (fCall.args?.response) {
+                    client.send([{ text: fCall.args.response }]);
+                  } else {
+                    client.send([{ text: `I've added ${cartItem.name} to your cart!` }]);
+                  }
+                  
+                  return;
+                }
+                
+                // Fallback to finding the add to cart button based on the current page
                 const location = window.location.pathname;
                 let addToCartButton: HTMLButtonElement | null = null;
 
@@ -523,7 +753,7 @@ const NavAssistantComponent = () => {
                   // For regular product pages with category/id pattern
                   addToCartButton = document.querySelector('.add-to-cart-btn') as HTMLButtonElement;
                 } else if (location.includes('/all') || location.includes('/clothing') || 
-                           location.includes('/electronics') || location.includes('/dog')) {
+                           location.includes('/electronics') || location.includes('/pets')) {
                   // For category pages, find the first product's add to cart button
                   const productCard = document.querySelector('.product-card') as HTMLElement;
                   if (productCard) {
@@ -599,21 +829,192 @@ const NavAssistantComponent = () => {
     };
   }, [client, navigate, addToCart]);
 
-  return (
-    <div className="nav-assistant">
-      <button 
-        className={`nav-assistant__button ${isListening ? 'nav-assistant__button--listening' : ''}`}
-        onClick={() => {
-          if (isListening) {
-            client?.send([{ text: "Stop listening" }]);
-          } else {
-            client?.send([{ text: "Start listening" }]);
+  const handleSendMessage = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    
+    if (!inputValue.trim()) return;
+    
+    // Add user message to chat
+    setMessages(prev => [
+      ...prev,
+      {
+        role: 'user',
+        content: inputValue,
+        timestamp: new Date()
+      }
+    ]);
+    
+    // Send message to API
+    if (client) {
+      client.send([{ text: inputValue }]);
+    }
+    
+    // Clear input
+    setInputValue('');
+  };
+
+  const handleVoiceInput = () => {
+    if (isListening) {
+      client?.send([{ text: "Stop listening" }]);
+    } else {
+      client?.send([{ text: "Start listening" }]);
+      
+      // Add a message showing that the assistant is listening
+      if (!isListening) {
+        setMessages(prev => [
+          ...prev,
+          {
+            role: 'assistant',
+            content: "I'm listening... What can I help you with?",
+            timestamp: new Date()
           }
-        }}
-      >
-        {isListening ? '🎤' : '🎯'}
-      </button>
-    </div>
+        ]);
+      }
+    }
+  };
+
+  const handleClearChat = () => {
+    setMessages([
+      {
+        role: 'assistant',
+        content: 'Hi! I\'m your SmartBuy shopping assistant. How can I help you today?',
+        timestamp: new Date()
+      }
+    ]);
+  };
+
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const getContextBasedSuggestions = () => {
+    // Return relevant suggestions based on current page
+    if (location.pathname.includes('/pets/dog')) {
+      return [
+        "What dog food do you recommend?",
+        "Show me dog toys",
+        "Do you have any dog treats on sale?"
+      ];
+    } else if (location.pathname.includes('/clothing')) {
+      return [
+        "Show me the latest styles",
+        "Do you have jeans in different sizes?",
+        "What's trending in fashion?"
+      ];
+    } else if (location.pathname.includes('/electronics')) {
+      return [
+        "What's your best smartphone?",
+        "Compare laptop models",
+        "Show me headphones under $200"
+      ];
+    } else if (location.pathname.includes('/cart')) {
+      return [
+        "Apply a discount code",
+        "What's your shipping policy?",
+        "How long will delivery take?"
+      ];
+    } else {
+      return [
+        "What's on sale today?",
+        "Show me popular products",
+        "Help me find a gift"
+      ];
+    }
+  };
+
+  return (
+    <>
+      {/* Floating button */}
+      <div className="nav-assistant">
+        <button 
+          className={`nav-assistant__button ${isListening ? 'nav-assistant__button--listening' : ''} ${isSpeaking ? 'nav-assistant__button--speaking' : ''}`}
+          onClick={toggleNavAssistant}
+          aria-label="Open shopping assistant"
+          title="Open shopping assistant (Alt+A)"
+        >
+          <span className="nav-assistant__icon">💬</span>
+        </button>
+      </div>
+
+      {/* Chat Panel */}
+      <div className={`nav-assistant-panel ${isNavAssistantOpen ? 'open' : ''}`}>
+        <div className="nav-assistant-panel__header">
+          <h2>Shopping Assistant</h2>
+          <div className="nav-assistant-panel__actions">
+            <button 
+              className="nav-assistant-panel__action-btn" 
+              onClick={handleClearChat}
+              title="Clear chat"
+            >
+              <span>🗑️</span>
+            </button>
+            <button 
+              className="nav-assistant-panel__action-btn"
+              onClick={toggleNavAssistant}
+              title="Close assistant (Esc)"
+            >
+              <span>✕</span>
+            </button>
+          </div>
+        </div>
+        
+        <div className="nav-assistant-panel__messages">
+          {messages.map((message, index) => (
+            <div key={index} className={`nav-assistant-panel__message ${message.role}`}>
+              <div className="nav-assistant-panel__message-content">
+                {message.content}
+              </div>
+              <div className="nav-assistant-panel__message-time">
+                {formatTime(message.timestamp)}
+              </div>
+            </div>
+          ))}
+          <div ref={messagesEndRef} />
+        </div>
+        
+        <div className="nav-assistant-panel__suggestions">
+          {getContextBasedSuggestions().map((suggestion, index) => (
+            <button 
+              key={index} 
+              className="nav-assistant-panel__suggestion-btn"
+              onClick={() => {
+                setInputValue(suggestion);
+                setTimeout(() => handleSendMessage(), 100);
+              }}
+            >
+              {suggestion}
+            </button>
+          ))}
+        </div>
+        
+        <form className="nav-assistant-panel__input-container" onSubmit={handleSendMessage}>
+          <input
+            type="text"
+            className="nav-assistant-panel__input"
+            placeholder="Ask me anything about products..."
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            ref={inputRef}
+          />
+          <button 
+            type="button"
+            className={`nav-assistant-panel__voice-btn ${isListening ? 'listening' : ''}`}
+            onClick={handleVoiceInput}
+            title={isListening ? "Stop listening" : "Start voice input"}
+          >
+            <span>{isListening ? '🎤' : '🎙️'}</span>
+          </button>
+          <button 
+            type="submit" 
+            className="nav-assistant-panel__send-btn"
+            disabled={!inputValue.trim()}
+            title="Send message"
+          >
+            <span>➤</span>
+          </button>
+        </form>
+      </div>
+    </>
   );
 };
 

@@ -58,6 +58,7 @@ import PetsPage from '../pages/pets/PetsPage';
 import Dog from '../pages/pets/Dog';
 import Cat from '../pages/pets/Cat';
 import PetSupplies from '../pages/pets/PetSupplies';
+import ImageLoadMonitor from '../components/Image/ImageLoadMonitor';
 
 const API_KEY = process.env.REACT_APP_GEMINI_API_KEY as string;
 if (typeof API_KEY !== "string") {
@@ -115,6 +116,20 @@ function App() {
   const videoRef = useRef<HTMLVideoElement>(null);
   // either the screen capture, the video or null, if null we hide it
   const [videoStream, setVideoStream] = useState<MediaStream | null>(null);
+  const [showMonitor, setShowMonitor] = useState(false);
+  
+  // Enable image monitor when pressing Ctrl+Shift+I
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && e.key === 'I') {
+        setShowMonitor(prev => !prev);
+        e.preventDefault();
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   return (
     <Router>
@@ -122,90 +137,93 @@ function App() {
         <CartProvider>
           <SavedItemsProvider>
             <RecentlyViewedProvider>
-              <div className="App">
-                <LiveAPIProvider url={uri} apiKey={API_KEY}>
-                  <NavigationHelper />
-                  <Header />
-                  <NavAssistant />
-                  <div className="main-content">
-                    <Routes>
-                      {/* Home and Search Routes */}
-                      <Route path="/" element={<All />} />
-                      <Route path="/search" element={<SearchResults />} />
-                      <Route path="/compare" element={<CompareProducts />} />
-                      <Route path="/instore" element={<InStore />} />
+              <AppProvider>
+                <div className="App">
+                  <LiveAPIProvider url={uri} apiKey={API_KEY}>
+                    <NavigationHelper />
+                    <Header />
+                    <NavAssistant />
+                    <div className="main-content">
+                      <Routes>
+                        {/* Home and Search Routes */}
+                        <Route path="/" element={<All />} />
+                        <Route path="/search" element={<SearchResults />} />
+                        <Route path="/compare" element={<CompareProducts />} />
+                        <Route path="/instore" element={<InStore />} />
 
-                      {/* Product Detail Routes */}
-                      <Route path="/:category/:id" element={<ProductDetail />} />
-                      <Route path="/product/:id" element={<ProductRedirect />} />
-                      <Route path="/clothing/jeans/baby-boot" element={<BabyBootJean />} />
+                        {/* Product Detail Routes */}
+                        <Route path="/:category/:id" element={<ProductDetail />} />
+                        <Route path="/product/:id" element={<ProductRedirect />} />
+                        <Route path="/clothing/jeans/baby-boot" element={<BabyBootJean />} />
 
-                      {/* Cart and Order Routes */}
-                      <Route path="/cart" element={<Cart />} />
-                      <Route path="/order-payment-confirmation" element={<OrderPaymentConfirmation />} />
+                        {/* Cart and Order Routes */}
+                        <Route path="/cart" element={<Cart />} />
+                        <Route path="/order-payment-confirmation" element={<OrderPaymentConfirmation />} />
 
-                      {/* Protected Routes */}
-                      <Route path="/profile" element={
-                        <ProtectedRoute>
-                          <Profile />
-                        </ProtectedRoute>
-                      } />
-                      <Route path="/personalized" element={
-                        <ProtectedRoute>
-                          <PersonalizedPage />
-                        </ProtectedRoute>
-                      } />
-                      <Route path="/personalized/:id" element={
-                        <ProtectedRoute>
-                          <ProductDetail />
-                        </ProtectedRoute>
-                      } />
+                        {/* Protected Routes */}
+                        <Route path="/profile" element={
+                          <ProtectedRoute>
+                            <Profile />
+                          </ProtectedRoute>
+                        } />
+                        <Route path="/personalized" element={
+                          <ProtectedRoute>
+                            <PersonalizedPage />
+                          </ProtectedRoute>
+                        } />
+                        <Route path="/personalized/:id" element={
+                          <ProtectedRoute>
+                            <ProductDetail />
+                          </ProtectedRoute>
+                        } />
 
-                      {/* Clothing Routes */}
-                      <Route path="/clothing">
-                        <Route index element={<Clothing />} />
-                        <Route path="mens" element={<Mens />} />
-                        <Route path="womens" element={<Womens />} />
-                        <Route path="accessories" element={<Accessories />} />
-                        <Route path="hats" element={<Hats />} />
-                        <Route path="shirts" element={<Shirts />} />
-                        <Route path="jeans" element={<Jeans />} />
-                        <Route path="dresses" element={<Dresses />} />
-                      </Route>
+                        {/* Clothing Routes */}
+                        <Route path="/clothing">
+                          <Route index element={<Clothing />} />
+                          <Route path="mens" element={<Mens />} />
+                          <Route path="womens" element={<Womens />} />
+                          <Route path="accessories" element={<Accessories />} />
+                          <Route path="hats" element={<Hats />} />
+                          <Route path="shirts" element={<Shirts />} />
+                          <Route path="jeans" element={<Jeans />} />
+                          <Route path="dresses" element={<Dresses />} />
+                        </Route>
 
-                      {/* Electronics Routes */}
-                      <Route path="/electronics">
-                        <Route index element={<Electronics />} />
-                        <Route path="smartphones" element={<Smartphones />} />
-                        <Route path="laptops" element={<Laptops />} />
-                        <Route path="accessories" element={<ElectronicsAccessories />} />
-                      </Route>
+                        {/* Electronics Routes */}
+                        <Route path="/electronics">
+                          <Route index element={<Electronics />} />
+                          <Route path="smartphones" element={<Smartphones />} />
+                          <Route path="laptops" element={<Laptops />} />
+                          <Route path="accessories" element={<ElectronicsAccessories />} />
+                        </Route>
 
-                      {/* Pets Routes */}
-                      <Route path="/pets">
-                        <Route index element={<PetsPage />} />
-                        <Route path="dog" element={<Dog />} />
-                        <Route path="cat" element={<Cat />} />
-                        <Route path="supplies" element={<PetSupplies />} />
-                      </Route>
+                        {/* Pets Routes */}
+                        <Route path="/pets">
+                          <Route index element={<PetsPage />} />
+                          <Route path="dog" element={<Dog />} />
+                          <Route path="cat" element={<Cat />} />
+                          <Route path="supplies" element={<PetSupplies />} />
+                        </Route>
 
-                      {/* 404 Route */}
-                      <Route path="*" element={<NotFoundPage />} />
-                    </Routes>
-                  </div>
-                  {/* Video container for webcam or screen captures */}
-                  <div className={`video-container ${videoStream ? 'active' : ''}`}>
-                    {videoStream && <video ref={videoRef} autoPlay muted playsInline />}
-                    <ControlTray
-                      videoRef={videoRef}
-                      onVideoStreamChange={setVideoStream}
-                      supportsVideo={true}
-                    >
-                      {/* put your own buttons here */}
-                    </ControlTray>
-                  </div>
-                </LiveAPIProvider>
-              </div>
+                        {/* 404 Route */}
+                        <Route path="*" element={<NotFoundPage />} />
+                      </Routes>
+                    </div>
+                    {/* Video container for webcam or screen captures */}
+                    <div className={`video-container ${videoStream ? 'active' : ''}`}>
+                      {videoStream && <video ref={videoRef} autoPlay muted playsInline />}
+                      <ControlTray
+                        videoRef={videoRef}
+                        onVideoStreamChange={setVideoStream}
+                        supportsVideo={true}
+                      >
+                        {/* put your own buttons here */}
+                      </ControlTray>
+                    </div>
+                    {showMonitor && <ImageLoadMonitor position="bottom-right" />}
+                  </LiveAPIProvider>
+                </div>
+              </AppProvider>
             </RecentlyViewedProvider>
           </SavedItemsProvider>
         </CartProvider>

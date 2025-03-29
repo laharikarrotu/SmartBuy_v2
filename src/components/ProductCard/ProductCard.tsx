@@ -1,4 +1,5 @@
 import React from 'react';
+import { getProductImage } from '../../services/image.service';
 import './ProductCard.scss';
 
 interface Product {
@@ -50,11 +51,18 @@ const ProductCard: React.FC<ProductCardProps> = ({
     e.preventDefault();
     onAddToCart();
   };
+  
+  // Get the product image with fallback
+  const productImage = getProductImage(product.image, product.category, product.id);
 
   return (
     <div className="product-card" onClick={onProductClick}>
       <div className="product-card__image">
-        <img src={product.image} alt={product.name} loading="lazy" />
+        <img 
+          src={productImage} 
+          alt={product.name} 
+          loading="lazy"
+        />
         {showDiscount && product.originalPrice && discountPercentage > 0 && (
           <div className="product-card__discount">
             {discountPercentage}% OFF

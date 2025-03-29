@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 // Use environment variable - React style
 const AUTH0_DOMAIN = process.env.REACT_APP_AUTH0_DOMAIN as string;
 const AUTH0_CLIENT_ID = process.env.REACT_APP_AUTH0_CLIENT_ID as string;
+const AUTH0_AUDIENCE = "https://dev-t0s067pnrpcdsto8.us.auth0.com/api/v2/";
 
 if (!AUTH0_DOMAIN || !AUTH0_CLIENT_ID) {
   throw new Error("Auth0 credentials not found in environment variables");
@@ -13,7 +14,7 @@ export const Auth0ProviderWithNavigate = ({ children }: { children: React.ReactN
   const navigate = useNavigate();
 
   const onRedirectCallback = (appState: any) => {
-    navigate(appState?.returnTo || '/baby-boot-jean');
+    navigate(appState?.returnTo || '/');
   };
 
   return (
@@ -22,6 +23,7 @@ export const Auth0ProviderWithNavigate = ({ children }: { children: React.ReactN
       clientId={AUTH0_CLIENT_ID}
       authorizationParams={{
         redirect_uri: window.location.origin,
+        audience: AUTH0_AUDIENCE,
         display: 'popup'
       }}
       onRedirectCallback={onRedirectCallback}

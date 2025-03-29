@@ -4,6 +4,7 @@ import { useCart } from '../contexts/CartContext';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useSavedItems } from '../contexts/SavedItemsContext';
 import { findProductByCategoryAndId } from '../data/products';
+import { getProductImage } from '../services/image.service';
 import './ProductDetail.scss';
 
 // Define the product data structure
@@ -228,13 +229,13 @@ const ProductDetail: React.FC = () => {
         {/* Left Column - Images */}
         <div className="product-images">
           <div className="main-image">
-            <img src={product.image} alt={product.name} />
+            <img src={getProductImage(product.image, product.category || 'electronics')} alt={product.name} />
             <span className="zoom-hint">Hover over image to zoom in</span>
           </div>
           <div className="thumbnail-list">
             {[...Array(6)].map((_, index) => (
               <div key={index} className="thumbnail">
-                <img src={product.image} alt={product.name} />
+                <img src={getProductImage(product.image, product.category || 'electronics')} alt={product.name} />
               </div>
             ))}
           </div>

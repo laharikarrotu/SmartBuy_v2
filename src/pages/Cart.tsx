@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useCart } from '../contexts/CartContext';
 import { useNavigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
+import { getProductImage } from '../services/image.service';
 import './Cart.scss';
 
 interface Product {
@@ -279,7 +280,7 @@ export const Cart: React.FC = () => {
               {items.map((item) => (
                 <tr key={item.id} className="cart-item">
                   <td className="item-info">
-                    <img src={item.image} alt={item.name} />
+                    <img src={getProductImage(item.image, item.category || 'electronics')} alt={item.name} />
                     <div className="item-details">
                       <h3>{item.name}</h3>
                     </div>
