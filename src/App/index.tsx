@@ -35,6 +35,8 @@ import { Profile } from '../pages/Profile';
 import All from '../pages/All';
 import Clothing from '../pages/Clothing';
 import Electronics from '../pages/Electronics';
+import Deals from '../pages/Deals';
+import Categories from '../pages/Categories';
 import { Auth0ProviderWithNavigate } from '../auth/Auth0ProviderWithNavigate';
 import { ProtectedRoute } from '../auth/ProtectedRoute';
 import PersonalizedPage from '../pages/PersonalizedPage';
@@ -150,6 +152,8 @@ function App() {
                         <Route path="/search" element={<SearchResults />} />
                         <Route path="/compare" element={<CompareProducts />} />
                         <Route path="/instore" element={<InStore />} />
+                        <Route path="/deals" element={<Deals />} />
+                        <Route path="/categories" element={<Categories />} />
 
                         {/* Product Detail Routes */}
                         <Route path="/:category/:id" element={<ProductDetail />} />

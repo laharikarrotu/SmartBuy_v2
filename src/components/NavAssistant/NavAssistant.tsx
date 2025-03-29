@@ -260,6 +260,24 @@ const toolObject: Tool[] = [{
         },
         required: ["productIds"]
       }
+    },
+    {
+      name: "getProductInfo",
+      description: "Get detailed information about a product",
+      parameters: {
+        type: SchemaType.OBJECT,
+        properties: {
+          productId: {
+            type: SchemaType.STRING,
+            description: "The ID of the product to get information about"
+          },
+          response: {
+            type: SchemaType.STRING,
+            description: "A friendly response about the product information"
+          }
+        },
+        required: ["productId"]
+      }
     }
   ]
 }];
@@ -569,6 +587,22 @@ const NavAssistantComponent = () => {
   const findProductInCategory = (productId: string, productName?: string): { category: string, id: string } | null => {
     console.log(`Searching for product: ${productId}, name: ${productName || 'not provided'}`);
     
+    // First, try to find the product directly in allProducts
+    for (const [category, categoryProducts] of Object.entries(allProducts)) {
+      const product = categoryProducts.find(p => 
+        p.id === productId || 
+        (productName && p.name.toLowerCase().includes(productName.toLowerCase()))
+      );
+      
+      if (product) {
+        console.log(`Found product directly in allProducts: ${product.name} in ${category}`);
+        return { 
+          category: product.category, 
+          id: product.id 
+        };
+      }
+    }
+    
     // Helper to check if ID matches common patterns
     const matchesCategoryPattern = (id: string) => {
       // Check for electronics patterns
@@ -811,6 +845,51 @@ const NavAssistantComponent = () => {
                 if (fCall.args?.response) {
                   client.send([{ text: fCall.args.response }]);
                 }
+              }
+              break;
+
+            case "getProductInfo":
+              try {
+                if (fCall.args?.productId) {
+                  const productId = fCall.args.productId;
+                  
+                  // First try to find the product using the product helpers
+                  let foundProduct = undefined;
+                  
+                  // Search in all categories of allProducts
+                  for (const categoryProducts of Object.values(allProducts)) {
+                    const product = categoryProducts.find(p => p.id === productId);
+                    if (product) {
+                      foundProduct = product;
+                      break;
+                    }
+                  }
+                  
+                  if (foundProduct) {
+                    // Send back the product info
+                    const response = fCall.args?.response || 
+                      `I found ${foundProduct.name}. It costs $${foundProduct.price} and has a rating of ${foundProduct.rating}/5 from ${foundProduct.reviews} reviews.`;
+                    
+                    client.send([{ text: response }]);
+                  } else {
+                    // Try to use the findProductInCategory function to see if we can identify where the product should be
+                    const productInfo = findProductInCategory(productId);
+                    if (productInfo) {
+                      client.send([{ 
+                        text: `I found that product ID ${productId} should be in the ${productInfo.category} category, but I don't have its full details. Would you like to navigate to see more?` 
+                      }]);
+                    } else {
+                      client.send([{ 
+                        text: "I'm sorry, I couldn't find detailed information about that product. Would you like to browse similar products instead?" 
+                      }]);
+                    }
+                  }
+                }
+              } catch (error) {
+                console.error('Error handling getProductInfo:', error);
+                client.send([{ 
+                  text: "I apologize, but I encountered an error retrieving product information. Could you try again with a different product?" 
+                }]);
               }
               break;
           }

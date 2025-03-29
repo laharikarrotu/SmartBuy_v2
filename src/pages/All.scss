@@ -627,3 +627,53 @@ body {
     }
   }
 }
+
+.home-page {
+  .category-description, .deals-description {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+    color: #555;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .shop-by-category {
+    h1, h2 {
+      margin-top: 2rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    
+    h1 {
+      font-size: 2.5rem;
+    }
+    
+    h2 {
+      font-size: 2rem;
+      color: #2c3e50;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 0.5rem;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .category-card {
+      p {
+        margin-top: 0.5rem;
+        color: #555;
+        font-size: 0.9rem;
+      }
+    }
+  }
+  
+  .deals-section {
+    h1 {
+      font-size: 2.5rem;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+  }
+}

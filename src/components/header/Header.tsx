@@ -64,10 +64,6 @@ export const Header = () => {
             <Link 
               to="/cart"
               className={location.pathname === '/cart' ? 'active' : ''}
-              onClick={(e) => {
-                e.preventDefault();
-                toggleControlTray();
-              }}
             >
               Cart {cartItemsCount > 0 && <span className="cart-count">{cartItemsCount}</span>}
             </Link>

@@ -12,29 +12,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <div className="app">
-      <header className="header">
-        <div className="header__container">
-          <div className="header__left">
-            <Link to="/" className="header__logo">
-              SmartBuy
-            </Link>
-            <nav className="header__nav">
-              <Link to="/" className="header__nav-item">Home</Link>
-              <Link to="/deals" className="header__nav-item">Deals</Link>
-              <Link to="/categories" className="header__nav-item">Categories</Link>
-            </nav>
-          </div>
-          <div className="header__right">
-            <button className="header__action" onClick={toggleNavAssistant}>
-              Menu
-            </button>
-            <button className="header__action" onClick={toggleControlTray}>
-              Cart
-            </button>
-          </div>
-        </div>
-      </header>
-
+      {/* Header removed to prevent duplication - using main Header from App.tsx */}
+      
       <main className="main-content">
         {children}
       </main>

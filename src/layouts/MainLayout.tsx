@@ -8,9 +8,7 @@ import { Outlet } from 'react-router-dom';
 const MainLayout: React.FC = () => {
   return (
     <div className="app-container">
-      <header className="app-header">
-        {/* Header components will be added here */}
-      </header>
+      {/* Using main Header from App.tsx */}
       
       <main className="app-content">
         <Outlet />

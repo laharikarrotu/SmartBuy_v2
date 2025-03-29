@@ -282,58 +282,6 @@ const All: React.FC = () => {
   return (
     <div className="home-page">
  
-      <header className="site-header">
-        <div className="header-container">
-          <div className="logo-container">
-            <img src="/smartbuy-logo.svg" alt="SmartBuy Logo" className="site-logo" />
-          </div>
-          <nav className="main-nav">
-            <ul>
-              <li>
-                <a href="#" 
-                  className={activeTab === "all" ? "active" : ""} 
-                  onClick={(e) => { e.preventDefault(); handleTabChange("all"); }}
-                >
-                  All Departments
-                </a>
-              </li>
-              <li>
-                <a href="#" 
-                  className={activeTab === "pet" ? "active" : ""} 
-                  onClick={(e) => { e.preventDefault(); handleTabChange("pet"); }}
-                >
-                  Pets
-                </a>
-              </li>
-              <li>
-                <a href="#" 
-                  className={activeTab === "electronics" ? "active" : ""} 
-                  onClick={(e) => { e.preventDefault(); handleTabChange("electronics"); }}
-                >
-                  Electronics
-                </a>
-              </li>
-              <li>
-                <a href="#" 
-                  className={activeTab === "clothing" ? "active" : ""} 
-                  onClick={(e) => { e.preventDefault(); handleTabChange("clothing"); }}
-                >
-                  Clothing
-                </a>
-              </li>
-              <li><a href="#" onClick={(e) => { e.preventDefault(); navigate('/pets/dog'); }}>Today's Deals</a></li>
-            </ul>
-          </nav>
-          <div className="header-actions">
-            <button className="search-btn">
-              <i className="search-icon">🔍</i>
-            </button>
-            <button className="account-btn">Account</button>
-            <button className="cart-btn">Cart (0)</button>
-          </div>
-        </div>
-      </header>
- 
       <section className="popular-picks">
         <h2>Popular Categories in {popCategoryPicksTitle}</h2>
         <div className="picks-grid">
