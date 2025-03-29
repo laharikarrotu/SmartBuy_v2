@@ -2,11 +2,13 @@ import { Link, useLocation } from 'react-router-dom';
 import './header.scss';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useCart } from '../../contexts/CartContext';
+import { useApp } from '../../contexts/AppContext';
 
 export const Header = () => {
   const location = useLocation();
   const { isAuthenticated, loginWithPopup, logout } = useAuth0();
   const { items } = useCart();
+  const { toggleNavAssistant, toggleControlTray } = useApp();
   const cartItemsCount = items.reduce((total, item) => total + item.quantity, 0);
 
   return (
@@ -23,10 +25,26 @@ export const Header = () => {
           </li>
           <li>
             <Link 
-              to="/dog"
-              className={location.pathname === '/dog' ? 'active' : ''}
+              to="/pets/dog"
+              className={location.pathname.includes('/pets/dog') ? 'active' : ''}
             >
               Products
+            </Link>
+          </li>
+          <li>
+            <Link 
+              to="/deals"
+              className={location.pathname === '/deals' ? 'active' : ''}
+            >
+              Deals
+            </Link>
+          </li>
+          <li>
+            <Link 
+              to="/categories"
+              className={location.pathname === '/categories' ? 'active' : ''}
+            >
+              Categories
             </Link>
           </li>
           <li>
@@ -35,9 +53,21 @@ export const Header = () => {
             </Link>
           </li>
           <li>
+            <button 
+              className="menu-button"
+              onClick={toggleNavAssistant}
+            >
+              Menu
+            </button>
+          </li>
+          <li>
             <Link 
               to="/cart"
               className={location.pathname === '/cart' ? 'active' : ''}
+              onClick={(e) => {
+                e.preventDefault();
+                toggleControlTray();
+              }}
             >
               Cart {cartItemsCount > 0 && <span className="cart-count">{cartItemsCount}</span>}
             </Link>

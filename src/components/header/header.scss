@@ -67,6 +67,21 @@
             }
           }
         }
+
+        .menu-button {
+          padding: 0.5rem 1rem;
+          border-radius: 8px;
+          background: var(--Neutral-20);
+          color: var(--Neutral-90);
+          border: none;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          font-size: 1rem;
+
+          &:hover {
+            background: var(--Neutral-30);
+          }
+        }
       }
     }
   }

@@ -68,7 +68,7 @@ export type MultimodalLiveAPIClientConnection = {
 export class MultimodalLiveClient extends EventEmitter<MultimodalLiveClientEventTypes> {
   public ws: WebSocket | null = null;
   protected config: LiveConfig | null = null;
-  public url: string = "";
+  public url = "";
   private state = "disconnected";
   private isReconnecting = false;
 
@@ -291,7 +291,7 @@ export class MultimodalLiveClient extends EventEmitter<MultimodalLiveClientEvent
   /**
    * send normal content parts such as { text }
    */
-  send(parts: Part | Part[], turnComplete: boolean = true) {
+  send(parts: Part | Part[], turnComplete = true) {
     parts = Array.isArray(parts) ? parts : [parts];
     const content: Content = {
       role: "user",

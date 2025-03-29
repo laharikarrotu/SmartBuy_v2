@@ -77,8 +77,8 @@ export const blobToJSON = (blob: Blob) =>
   });
 
 export function base64ToArrayBuffer(base64: string) {
-  var binaryString = atob(base64);
-  var bytes = new Uint8Array(binaryString.length);
+  let binaryString = atob(base64);
+  let bytes = new Uint8Array(binaryString.length);
   for (let i = 0; i < binaryString.length; i++) {
     bytes[i] = binaryString.charCodeAt(i);
   }

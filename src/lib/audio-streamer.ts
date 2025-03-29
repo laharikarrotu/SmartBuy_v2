@@ -21,16 +21,16 @@ import {
 
 export class AudioStreamer {
   public audioQueue: Float32Array[] = [];
-  private isPlaying: boolean = false;
-  private sampleRate: number = 24000;
-  private bufferSize: number = 7680;
+  private isPlaying = false;
+  private sampleRate = 24000;
+  private bufferSize = 7680;
   private processingBuffer: Float32Array = new Float32Array(0);
-  private scheduledTime: number = 0;
+  private scheduledTime = 0;
   public gainNode: GainNode;
   public source: AudioBufferSourceNode;
-  private isStreamComplete: boolean = false;
+  private isStreamComplete = false;
   private checkInterval: number | null = null;
-  private initialBufferTime: number = 0.1; //0.1 // 100ms initial buffer
+  private initialBufferTime = 0.1; //0.1 // 100ms initial buffer
   private endOfQueueAudioSource: AudioBufferSourceNode | null = null;
 
   public onComplete = () => {
