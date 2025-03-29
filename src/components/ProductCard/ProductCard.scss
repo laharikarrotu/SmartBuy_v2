@@ -199,4 +199,61 @@
       font-size: 0.8rem;
     }
   }
+}
+
+@media (max-width: 576px) {
+  .product-card {
+    &__image {
+      padding-top: 60%; // Even smaller images on mobile
+    }
+    
+    &__content {
+      padding: 10px;
+    }
+    
+    &__brand {
+      font-size: 0.75rem;
+      margin-bottom: 4px;
+    }
+    
+    &__title {
+      font-size: 0.85rem;
+      margin-bottom: 6px;
+      -webkit-line-clamp: 2;
+    }
+    
+    &__rating {
+      margin-bottom: 6px;
+      
+      .stars {
+        font-size: 0.8rem;
+      }
+      
+      .reviews {
+        font-size: 0.75rem;
+      }
+    }
+    
+    &__price {
+      margin-bottom: 8px;
+      
+      .original-price {
+        font-size: 0.75rem;
+      }
+      
+      .current-price {
+        font-size: 0.9rem;
+      }
+    }
+    
+    &__add-to-cart {
+      padding: 6px 10px;
+      font-size: 0.75rem;
+    }
+    
+    &__discount {
+      padding: 2px 6px;
+      font-size: 0.75rem;
+    }
+  }
 } 

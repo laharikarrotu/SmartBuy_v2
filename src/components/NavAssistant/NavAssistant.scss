@@ -289,5 +289,71 @@
     bottom: 80px;
     right: 20px;
     left: 20px;
+    
+    &__header {
+      padding: 12px;
+      
+      h2 {
+        font-size: 16px;
+      }
+    }
+    
+    &__messages {
+      padding: 10px;
+      gap: 8px;
+    }
+    
+    &__message {
+      max-width: 90%;
+      padding: 8px 10px;
+      
+      &-content {
+        font-size: 13px;
+      }
+    }
+    
+    &__suggestions {
+      padding: 8px 10px;
+      gap: 6px;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      
+      &::-webkit-scrollbar {
+        height: 3px;
+      }
+      
+      &::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.2);
+        border-radius: 3px;
+      }
+    }
+    
+    &__suggestion-btn {
+      font-size: 11px;
+      padding: 5px 10px;
+      white-space: nowrap;
+    }
+    
+    &__input-container {
+      padding: 10px;
+    }
+    
+    &__input {
+      padding: 7px 10px;
+      font-size: 13px;
+    }
+    
+    &__voice-btn, 
+    &__send-btn {
+      width: 32px;
+      height: 32px;
+    }
+  }
+  
+  .nav-assistant__button {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
   }
 } 
