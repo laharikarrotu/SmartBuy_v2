@@ -4,29 +4,55 @@
   @extend .card;
   position: relative;
   background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 85, 166, 0.08);
   overflow: hidden;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: all 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+  transform-origin: center bottom;
   cursor: pointer;
   height: 100%;
   display: flex;
   flex-direction: column;
+  border: 1px solid rgba(230, 242, 255, 0.6);
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    
+    .product-image {
+      transform: scale(1.08);
+    }
+    
+    .product-title {
+      color: var(--cute-accent-pink, #ff6b9d);
+    }
+    
+    .product-price {
+      transform: scale(1.05);
+    }
+    
+    .product-details {
+      background: linear-gradient(to bottom, rgba(255,255,255,0.9), rgba(255,255,255,1));
+    }
+    
+    .btn-add-to-cart {
+      background-color: var(--cute-accent-mint, #7cdba6);
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
   }
 
   &__image {
     @extend .card__image;
     position: relative;
     width: 100%;
-    padding-top: 75%; // Changed from 100% (1:1) to 75% (4:3) for shorter images
+    padding-top: 75%;
     overflow: hidden;
+    background: linear-gradient(to bottom, #f8f9fa, #ffffff);
+    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     
     @media (max-width: 768px) {
-      padding-top: 66.67%; // Change to 2:3 ratio on mobile for even smaller images
+      padding-top: 66.67%;
     }
 
     img {
@@ -35,7 +61,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      object-fit: contain; // Changed from cover to contain
+      object-fit: contain;
       transition: transform 0.3s ease;
     }
 
@@ -50,13 +76,14 @@
     position: absolute;
     top: $spacing-unit;
     right: $spacing-unit;
-    background: #e31837;
+    background: linear-gradient(135deg, #e31837, #ff5252);
     color: white;
-    padding: 4px 8px;
-    border-radius: 4px;
+    padding: 5px 10px;
+    border-radius: 20px;
     font-size: 0.875rem;
     font-weight: 600;
     z-index: 1;
+    box-shadow: 0 2px 4px rgba(227, 24, 55, 0.2);
   }
 
   &__tag {
@@ -89,12 +116,16 @@
     flex: 1;
     display: flex;
     flex-direction: column;
+    background: linear-gradient(to bottom, #ffffff, #f8f9fa);
+    border-top: 1px solid rgba(230, 242, 255, 0.5);
+    transition: background 0.3s ease;
   }
 
   &__brand {
     font-size: 0.875rem;
-    color: $secondary-color;
+    color: var(--smartbuy-blue);
     margin-bottom: $spacing-unit;
+    font-weight: 500;
   }
 
   &__title {
@@ -107,6 +138,7 @@
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    transition: color 0.3s ease;
   }
 
   &__rating {
@@ -114,7 +146,7 @@
     margin-bottom: $spacing-unit;
 
     .stars {
-      color: $warning-color;
+      color: #ffc107;
       margin-right: $spacing-unit;
     }
 
@@ -128,7 +160,9 @@
     @include flex-center;
     gap: $spacing-unit;
     margin-bottom: $spacing-unit * 1.5;
-    margin-top: auto; // Push price to bottom of content
+    margin-top: auto;
+    transition: transform 0.3s ease;
+    transform-origin: left center;
 
     .original-price {
       font-size: 0.875rem;
@@ -139,7 +173,7 @@
     .current-price {
       font-size: 1.125rem;
       font-weight: 600;
-      color: $dark-color;
+      color: var(--smartbuy-blue);
     }
   }
 
@@ -147,31 +181,70 @@
     @extend .button;
     @extend .button--primary;
     width: 100%;
-    padding: 8px 16px;
+    padding: 10px 16px;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
     font-size: 0.875rem;
     font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.2s ease;
-    margin-top: auto; // Push button to bottom
-    background-color: var(--smartbuy-blue, #0055a6);
+    transition: all 0.3s ease;
+    margin-top: auto;
+    background: linear-gradient(135deg, var(--smartbuy-blue), var(--smartbuy-dark-blue));
     color: white;
-    z-index: 5; // Ensure the button is always clickable
+    z-index: 5;
     position: relative;
+    box-shadow: 0 2px 6px rgba(0, 85, 166, 0.2);
+    overflow: hidden;
 
     &:hover {
-      background: var(--smartbuy-dark-blue, #003b73);
+      background: linear-gradient(135deg, var(--smartbuy-dark-blue), var(--smartbuy-blue));
+      box-shadow: 0 4px 8px rgba(0, 85, 166, 0.3);
+      transform: translateY(-2px);
+      opacity: 0.9;
     }
 
     &:active {
       transform: translateY(1px);
+      box-shadow: 0 2px 4px rgba(0, 85, 166, 0.2);
     }
     
     &:focus {
-      outline: 2px solid var(--smartbuy-light-blue, #e6f2ff);
+      outline: 2px solid var(--smartbuy-light-blue);
       outline-offset: 2px;
     }
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 5px;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.5);
+      opacity: 0;
+      border-radius: 100%;
+      transform: scale(1, 1) translate(-50%);
+      transform-origin: 50% 50%;
+    }
+    
+    &:hover::after {
+      animation: ripple 1s ease-out;
+    }
+  }
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0, 0);
+    opacity: 0.5;
+  }
+  20% {
+    transform: scale(25, 25);
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(40, 40);
   }
 }
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import './All.scss';
+import CategoryCard from '../components/CategoryCard/CategoryCard';
 
 interface CategoryItem {
   name: string;
@@ -308,16 +309,14 @@ const All: React.FC = () => {
         <h2>Shop by Category</h2>
         <div className="categories-grid">
           {getCategories().map((category, index) => (
-            <div 
-              key={`category-${index}`} 
-              className="category-card"
+            <CategoryCard
+              key={`category-${index}`}
+              name={category.name}
+              image={category.image}
+              link={category.link || '#'}
+              category={category.category}
               onClick={() => handleNavigation(category)}
-            >
-              <div className="image-container">
-                <img src={category.image} alt={category.name} />
-              </div>
-              <h3>{category.name}</h3>
-            </div>
+            />
           ))}
         </div>
       </section>

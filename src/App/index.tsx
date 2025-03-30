@@ -141,6 +141,12 @@ function App() {
             <RecentlyViewedProvider>
               <AppProvider>
                 <div className="App">
+                  {/* Add floating bubbles for enhanced background effects */}
+                  <div className="floating-bubble bubble-1"></div>
+                  <div className="floating-bubble bubble-2"></div>
+                  <div className="floating-bubble bubble-3"></div>
+                  <div className="floating-bubble bubble-4"></div>
+                  
                   <LiveAPIProvider url={uri} apiKey={API_KEY}>
                     <NavigationHelper />
                     <Header />

@@ -2,7 +2,7 @@
  * Copyright 2024 Google LLC
  * Licensed under the Apache License, Version 2.0
  */
-import React, { memo, useEffect, useState, useRef } from 'react';
+import React, { memo, useEffect, useState, useRef, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useLiveAPIContext } from '../../contexts/LiveAPIContext';
 import { useCart, CartItem } from '../../contexts/CartContext';
@@ -278,6 +278,24 @@ const toolObject: Tool[] = [{
         },
         required: ["productId"]
       }
+    },
+    {
+      name: "searchProduct",
+      description: "Search for a specific product",
+      parameters: {
+        type: SchemaType.OBJECT,
+        properties: {
+          query: {
+            type: SchemaType.STRING,
+            description: "The search query"
+          },
+          response: {
+            type: SchemaType.STRING,
+            description: "A friendly response about the search results"
+          }
+        },
+        required: ["query"]
+      }
     }
   ]
 }];
@@ -375,6 +393,60 @@ const products: Record<string, Product[]> = {
         model: "Pro Max 2024",
         storage: "256GB",
         camera: "48MP + 12MP dual camera"
+      }
+    },
+    {
+      id: "iphone-15-pro",
+      name: "iPhone 15 Pro",
+      price: 1099.99,
+      image: "https://images.unsplash.com/photo-1591337676887-a217a6970a8a?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+      category: "electronics",
+      description: "Apple's latest flagship smartphone with A17 chip",
+      inStock: true,
+      brand: "Apple",
+      rating: 4.9,
+      reviews: 2500,
+      features: ["A17 Pro chip", "Pro camera system", "Titanium design"],
+      specifications: {
+        model: "iPhone 15 Pro",
+        storage: "256GB",
+        camera: "48MP main camera with ProRAW"
+      }
+    },
+    {
+      id: "samsung-galaxy-s24",
+      name: "Samsung Galaxy S24 Ultra",
+      price: 1199.99,
+      image: "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+      category: "electronics",
+      description: "Samsung's premium smartphone with advanced AI features",
+      inStock: true,
+      brand: "Samsung",
+      rating: 4.8,
+      reviews: 1800,
+      features: ["Snapdragon 8 Gen 3", "200MP camera", "Galaxy AI"],
+      specifications: {
+        model: "Galaxy S24 Ultra",
+        storage: "512GB",
+        camera: "200MP main camera with Space Zoom"
+      }
+    },
+    {
+      id: "google-pixel-8",
+      name: "Google Pixel 8 Pro",
+      price: 999.99,
+      image: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+      category: "electronics",
+      description: "Google's flagship with advanced camera and AI capabilities",
+      inStock: true,
+      brand: "Google",
+      rating: 4.7,
+      reviews: 1200,
+      features: ["Tensor G3 chip", "Super Res Zoom", "Google AI"],
+      specifications: {
+        model: "Pixel 8 Pro",
+        storage: "256GB",
+        camera: "50MP main with computational photography"
       }
     },
     {
@@ -697,6 +769,245 @@ const NavAssistantComponent = () => {
     return { category: 'electronics', id: productId };
   };
 
+  // Define setChatMessage helper function to add consistent messaging
+  const setChatMessage = (message: string) => {
+    setMessages(prev => [
+      ...prev,
+      {
+        role: 'assistant',
+        content: message,
+        timestamp: new Date()
+      }
+    ]);
+  };
+
+  // Update the handleProductSearch function to handle all product types
+  const handleProductSearch = (query: string) => {
+    if (!query) return;
+    
+    // Normalize the query for better matching
+    const normalizedQuery = query.toLowerCase().trim();
+    
+    // Check product category types
+    const isPhoneSearch = normalizedQuery.includes('phone') || 
+      normalizedQuery.includes('smartphone') || 
+      normalizedQuery.includes('iphone') || 
+      normalizedQuery.includes('samsung') || 
+      normalizedQuery.includes('pixel');
+
+    const isClothingSearch = normalizedQuery.includes('cloth') || 
+      normalizedQuery.includes('shirt') || 
+      normalizedQuery.includes('jean') || 
+      normalizedQuery.includes('dress') || 
+      normalizedQuery.includes('hat');
+
+    const isPetSearch = normalizedQuery.includes('pet') || 
+      normalizedQuery.includes('dog') || 
+      normalizedQuery.includes('cat') || 
+      normalizedQuery.includes('food') || 
+      normalizedQuery.includes('toy');
+    
+    // Determine primary category from query
+    let category: string | null = null;
+    if (isPhoneSearch) category = 'electronics';
+    else if (isClothingSearch) category = 'clothing';
+    else if (isPetSearch) {
+      if (normalizedQuery.includes('dog')) category = 'dog';
+      else if (normalizedQuery.includes('cat')) category = 'cat';
+      else category = 'pets';
+    }
+    
+    try {
+      // If no specific category determined, search across all products
+      if (!category) {
+        // Search across all products for matching terms
+        const allProductsList = Object.values(products).flat();
+        const searchTerms = normalizedQuery.split(' ').filter(term => term.length > 2);
+        
+        // Search by direct name matches first
+        let matches = allProductsList.filter(product => 
+          product.name.toLowerCase().includes(normalizedQuery) ||
+          (product.description && product.description.toLowerCase().includes(normalizedQuery))
+        );
+        
+        // If no direct matches, try matching individual terms
+        if (matches.length === 0 && searchTerms.length > 0) {
+          matches = allProductsList.filter(product => 
+            searchTerms.some(term => 
+              product.name.toLowerCase().includes(term) || 
+              (product.description && product.description.toLowerCase().includes(term)) ||
+              (product.brand && product.brand.toLowerCase().includes(term))
+            )
+          );
+        }
+        
+        if (matches.length > 0) {
+          // Sort by relevance (match in name is better than match in description)
+          matches.sort((a, b) => {
+            const aNameMatch = a.name.toLowerCase().includes(normalizedQuery) ? 1 : 0;
+            const bNameMatch = b.name.toLowerCase().includes(normalizedQuery) ? 1 : 0;
+            return bNameMatch - aNameMatch;
+          });
+          
+          const bestMatch = matches[0];
+          setChatMessage(`I found the ${bestMatch.name}. Let me show you.`);
+          navigate(`/${bestMatch.category}/${bestMatch.id}`, { 
+            state: { product: bestMatch, category: bestMatch.category } 
+          });
+          return;
+        } else {
+          // No specific matches found, show generic search page or products
+          setChatMessage("I couldn't find an exact match for your search. Let me show you our products so you can browse.");
+          navigate('/');
+          return;
+        }
+      }
+      
+      // Handle category-specific searches
+      if (category === 'electronics' && isPhoneSearch) {
+        // Extract specific phone model if mentioned
+        let phoneModel = '';
+        const brands = ['iphone', 'samsung', 'google', 'pixel', 'oneplus', 'xiaomi'];
+        
+        for (const brand of brands) {
+          if (normalizedQuery.includes(brand)) {
+            const modelRegex = new RegExp(`${brand}\\s*([\\w\\d\\s]+)`, 'i');
+            const match = normalizedQuery.match(modelRegex);
+            if (match && match[1]) {
+              phoneModel = `${brand} ${match[1].trim()}`;
+            } else {
+              phoneModel = brand;
+            }
+            break;
+          }
+        }
+        
+        // Navigate to smartphones category if no specific model found
+        if (!phoneModel) {
+          setChatMessage("I'll show you our smartphone selection");
+          navigate('/electronics/smartphones');
+          return;
+        }
+        
+        // Find specific phone matching the model search
+        const phonesCategory = Object.values(products)
+          .flat()
+          .filter(product => 
+            product.category === 'electronics' && 
+            (product.name.toLowerCase().includes('phone') || 
+             product.name.toLowerCase().includes('smartphone'))
+          );
+        
+        const bestMatch = phonesCategory.find(phone => 
+          phone.name.toLowerCase().includes(phoneModel.toLowerCase())
+        );
+        
+        if (bestMatch) {
+          setChatMessage(`I found the ${bestMatch.name}. Let me take you to it.`);
+          navigate(`/electronics/${bestMatch.id}`, { 
+            state: { product: bestMatch, category: 'electronics' } 
+          });
+        } else {
+          setChatMessage("I'll show you our smartphone collection. You can browse available models here.");
+          navigate('/electronics/smartphones');
+        }
+        return;
+      }
+      
+      // Handle clothing searches
+      if (category === 'clothing') {
+        // Extract specific clothing type
+        let clothingType = '';
+        const types = ['shirt', 'jean', 'dress', 'hat', 't-shirt'];
+        
+        for (const type of types) {
+          if (normalizedQuery.includes(type)) {
+            clothingType = type;
+            break;
+          }
+        }
+        
+        if (!clothingType) {
+          setChatMessage("I'll show you our clothing selection");
+          navigate('/clothing');
+          return;
+        }
+        
+        // Find specific clothing matching the search
+        const clothingItems = Object.values(products)
+          .flat()
+          .filter(product => product.category === 'clothing');
+        
+        const bestMatch = clothingItems.find(item => 
+          item.name.toLowerCase().includes(clothingType.toLowerCase())
+        );
+        
+        if (bestMatch) {
+          setChatMessage(`I found the ${bestMatch.name}. Let me take you to it.`);
+          navigate(`/clothing/${bestMatch.id}`, { 
+            state: { product: bestMatch, category: 'clothing' } 
+          });
+        } else {
+          setChatMessage("I'll show you our clothing collection. You can browse available items here.");
+          navigate('/clothing');
+        }
+        return;
+      }
+      
+      // Handle pet product searches
+      if (category === 'dog' || category === 'cat' || category === 'pets') {
+        const petCategory = category === 'pets' ? (normalizedQuery.includes('dog') ? 'dog' : 'cat') : category;
+        
+        // Extract specific pet product type
+        let productType = '';
+        const types = ['food', 'toy', 'bed', 'treat', 'collar'];
+        
+        for (const type of types) {
+          if (normalizedQuery.includes(type)) {
+            productType = type;
+            break;
+          }
+        }
+        
+        if (!productType) {
+          setChatMessage(`I'll show you our ${petCategory} products`);
+          navigate(`/pets/${petCategory}`);
+          return;
+        }
+        
+        // Find specific pet product matching the search
+        const petItems = Object.values(products)
+          .flat()
+          .filter(product => product.category === petCategory);
+        
+        const bestMatch = petItems.find(item => 
+          item.name.toLowerCase().includes(productType.toLowerCase()) ||
+          (item.description && item.description.toLowerCase().includes(productType.toLowerCase()))
+        );
+        
+        if (bestMatch) {
+          setChatMessage(`I found the ${bestMatch.name}. Let me take you to it.`);
+          navigate(`/pets/${petCategory}/${bestMatch.id}`, { 
+            state: { product: bestMatch, category: petCategory } 
+          });
+        } else {
+          setChatMessage(`I'll show you our ${petCategory} products. You can browse available items here.`);
+          navigate(`/pets/${petCategory}`);
+        }
+        return;
+      }
+      
+      // Default fallback if no specific handling
+      setChatMessage("Let me show you our products so you can browse.");
+      navigate('/');
+      
+    } catch (error) {
+      console.error("Error searching for products:", error);
+      setChatMessage("I'm having trouble finding that specific product. Let me show you our product categories instead.");
+      navigate('/');
+    }
+  };
+
   // Handle tool calls
   useEffect(() => {
     if (!client) return undefined;
@@ -892,6 +1203,16 @@ const NavAssistantComponent = () => {
                 }]);
               }
               break;
+
+            case "searchProduct":
+              if (fCall.args?.query) {
+                handleProductSearch(fCall.args.query);
+                
+                if (fCall.args?.response) {
+                  client.send([{ text: fCall.args.response }]);
+                }
+              }
+              break;
           }
         } catch (error) {
           console.error('Error handling tool call:', error);
@@ -1001,6 +1322,18 @@ const NavAssistantComponent = () => {
     }
   };
 
+  // Update the default suggestions array to include diverse product search options
+  const defaultSuggestions = [
+    "What can you help me with?",
+    "Show me dog toys",
+    "Find cat food products",
+    "I need a new smartphone",
+    "Show me Samsung phones",
+    "Find men's clothing",
+    "Show me jeans",
+    "Where are the pet beds?"
+  ];
+
   return (
     <>
       {/* Floating button */}
@@ -1052,7 +1385,7 @@ const NavAssistantComponent = () => {
         </div>
         
         <div className="nav-assistant-panel__suggestions">
-          {getContextBasedSuggestions().map((suggestion, index) => (
+          {defaultSuggestions.map((suggestion, index) => (
             <button 
               key={index} 
               className="nav-assistant-panel__suggestion-btn"

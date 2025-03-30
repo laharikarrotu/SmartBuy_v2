@@ -250,6 +250,29 @@ export const toolObject: Tool[] = [{
         },
         required: ["productId"]
       }
+    },
+    {
+      name: "searchProduct",
+      description: "Search for products, especially useful for finding specific smartphone models",
+      parameters: {
+        type: SchemaType.OBJECT,
+        properties: {
+          query: {
+            type: SchemaType.STRING,
+            description: "The search query, e.g. 'iPhone', 'Samsung Galaxy', 'Google Pixel'"
+          },
+          category: {
+            type: SchemaType.STRING,
+            description: "The category to search in, if known",
+            enum: ["dog", "cat", "clothing", "electronics"]
+          },
+          response: {
+            type: SchemaType.STRING,
+            description: "A friendly response about searching for the product"
+          }
+        },
+        required: ["query"]
+      }
     }
   ]
 }];

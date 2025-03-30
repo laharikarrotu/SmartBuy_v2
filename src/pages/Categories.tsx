@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import CategoryCard from '../components/CategoryCard/CategoryCard';
 import './All.scss'; // Reusing the All.scss styles
 
 interface CategoryItem {
@@ -126,51 +127,45 @@ const Categories: React.FC = () => {
         <h2>Pets</h2>
         <div className="categories-grid">
           {categoryItems.pets.map((category, index) => (
-            <div 
-              key={`pet-${index}`} 
-              className="category-card"
+            <CategoryCard
+              key={`pet-${index}`}
+              name={category.name}
+              image={category.image}
+              link={category.link}
+              category="pets"
+              description={category.description}
               onClick={() => handleNavigation(category)}
-            >
-              <div className="image-container">
-                <img src={category.image} alt={category.name} />
-              </div>
-              <h3>{category.name}</h3>
-              <p>{category.description}</p>
-            </div>
+            />
           ))}
         </div>
         
         <h2>Electronics</h2>
         <div className="categories-grid">
           {categoryItems.electronics.map((category, index) => (
-            <div 
-              key={`electronics-${index}`} 
-              className="category-card"
+            <CategoryCard
+              key={`electronics-${index}`}
+              name={category.name}
+              image={category.image}
+              link={category.link}
+              category="electronics"
+              description={category.description}
               onClick={() => handleNavigation(category)}
-            >
-              <div className="image-container">
-                <img src={category.image} alt={category.name} />
-              </div>
-              <h3>{category.name}</h3>
-              <p>{category.description}</p>
-            </div>
+            />
           ))}
         </div>
         
         <h2>Clothing</h2>
         <div className="categories-grid">
           {categoryItems.clothing.map((category, index) => (
-            <div 
-              key={`clothing-${index}`} 
-              className="category-card"
+            <CategoryCard
+              key={`clothing-${index}`}
+              name={category.name}
+              image={category.image}
+              link={category.link}
+              category="clothing"
+              description={category.description}
               onClick={() => handleNavigation(category)}
-            >
-              <div className="image-container">
-                <img src={category.image} alt={category.name} />
-              </div>
-              <h3>{category.name}</h3>
-              <p>{category.description}</p>
-            </div>
+            />
           ))}
         </div>
       </section>

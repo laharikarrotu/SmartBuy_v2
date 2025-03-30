@@ -11,3 +11,114 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Add global styling for advanced hover effects */
+
+/* Enhance buttons with subtle hover effects */
+button, 
+.btn,
+a.btn,
+input[type="button"],
+input[type="submit"] {
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+button:hover, 
+.btn:hover,
+a.btn:hover,
+input[type="button"]:hover,
+input[type="submit"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+button:active, 
+.btn:active,
+a.btn:active,
+input[type="button"]:active,
+input[type="submit"]:active {
+  transform: translateY(1px);
+}
+
+/* Add a subtle ripple effect to clickable elements */
+.ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple:after {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.3) 10%, transparent 10.01%);
+  background-repeat: no-repeat;
+  background-position: 50%;
+  transform: scale(10, 10);
+  opacity: 0;
+  transition: transform .5s, opacity 1s;
+}
+
+.ripple:active:after {
+  transform: scale(0, 0);
+  opacity: 0.3;
+  transition: 0s;
+}
+
+/* Enhance focus states for accessibility */
+button:focus,
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.4);
+}
+
+/* Add a subtle glow effect to hoverable items */
+.hover-glow {
+  transition: all 0.3s ease;
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 15px rgba(66, 153, 225, 0.5);
+}
+
+/* Add a nice scale effect to images */
+img.scale-on-hover {
+  transition: transform 0.4s ease;
+}
+
+img.scale-on-hover:hover {
+  transform: scale(1.05);
+}
+
+/* Enhance links with animated underlines */
+a.animated-underline {
+  position: relative;
+  text-decoration: none;
+}
+
+a.animated-underline::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  transform: scaleX(0);
+  height: 2px;
+  bottom: -2px;
+  left: 0;
+  background-color: currentColor;
+  transform-origin: bottom right;
+  transition: transform 0.3s ease-out;
+}
+
+a.animated-underline:hover::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}

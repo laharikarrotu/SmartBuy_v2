@@ -70,15 +70,76 @@
   --petsmart-light-blue: #e6f2ff;
   --petsmart-green: #0d9c53;
   --petsmart-red: #e31837;
+
+  /* Cute Theme Colors - Added for visual enhancement */
+  --cute-gradient-bg: linear-gradient(135deg, #f0f8ff 0%, #e6f2ff 50%, #f0f8ff 100%);
+  --cute-accent-pink: rgba(255, 182, 193, 0.6);
+  --cute-accent-mint: rgba(152, 255, 179, 0.6);
+  --cute-accent-lavender: rgba(204, 153, 255, 0.6);
+  --cute-accent-blue: rgba(135, 206, 250, 0.6);
+  --cute-pattern-bg: url("data:image/svg+xml,%3Csvg width='70' height='70' viewBox='0 0 70 70' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%234299e1' fill-opacity='0.05'%3E%3Cpath d='M0 0h35v35H0V0zm5 5h25v25H5V5zm5 5h15v15H10V10zm5 5h5v5h-5v-5zM40 5h25v25H40V5zm5 5h15v15H45V10zm5 5h5v5h-5v-5zM70 35H35v35h35V35zm-5 5H40v25h25V40zm-5 5H45v15h15V45zm-5 5h-5v5h5v-5zM30 40H5v25h25V40zm-5 5H10v15h15V45zm-5 5h-5v5h5v-5z'/%3E%3C/g%3E%3C/svg%3E");
 }
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
-  background: white;
-  color: black;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  background: var(--cute-gradient-bg);
+  background-image: var(--cute-pattern-bg);
+  color: var(--Neutral-90);
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  position: relative;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Add shimmer effects to background */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: shimmer 8s infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Add floating sparkles effect */
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(circle at 10% 20%, var(--cute-accent-pink) 0%, transparent 20%),
+    radial-gradient(circle at 85% 60%, var(--cute-accent-mint) 0%, transparent 25%),
+    radial-gradient(circle at 30% 80%, var(--cute-accent-blue) 0%, transparent 20%),
+    radial-gradient(circle at 70% 15%, var(--cute-accent-lavender) 0%, transparent 22%);
+  opacity: 0.7;
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
 }
 
 .App {
@@ -95,7 +156,7 @@ body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
-  background: white;
+  background: transparent;
 }
 
 /* Hide the video container by default */
@@ -164,6 +225,15 @@ body {
   padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
+  background-color: rgba(255, 255, 255, 0.85);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 2;
+  overflow: hidden;
+  border: 1px solid rgba(230, 242, 255, 0.8);
 
   h1 {
     color: var(--smartbuy-text);
@@ -189,17 +259,43 @@ body {
   }
 }
 
+.page-container::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at center, transparent 65%, rgba(66, 153, 225, 0.08) 100%);
+  opacity: 0.7;
+  z-index: -1;
+  animation: rotate 20s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 .store-layout {
   padding: 40px;
   max-width: 1400px;
   margin: 0 auto;
-  background: white;
+  background: rgba(255, 255, 255, 0.9);
   color: black;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
 
   .page-title {
     text-align: center;
     font-size: 2rem;
-    color: black;
+    color: var(--smartbuy-blue);
     margin-bottom: 2rem;
     font-weight: 400;
   }
@@ -215,13 +311,50 @@ body {
       border: 1px solid #ddd;
       background: white;
       color: black;
-      border-radius: 4px;
+      border-radius: 8px;
       cursor: pointer;
       font-weight: 400;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
       
       &:hover {
-        background: #f5f5f5;
+        color: var(--smartbuy-blue);
+        transform: translateY(-3px);
+        box-shadow: 0 6px 12px rgba(66, 153, 225, 0.15);
       }
+    }
+
+    .filter-btn::before {
+      content: "";
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, #4299e1, #3182ce, #2b6cb0, #4299e1);
+      z-index: -2;
+      border-radius: inherit;
+      background-size: 300% 300%;
+      animation: buttonShimmer 3s ease infinite;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .filter-btn:hover::before {
+      opacity: 1;
+    }
+
+    .filter-btn::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: white;
+      z-index: -1;
+      border-radius: inherit;
     }
 
     .items-count {
@@ -269,6 +402,39 @@ body {
     
     .product-card {
       background: white;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+      z-index: 1;
+      
+      &:hover {
+        transform: translateY(-8px) scale(1.02) perspective(1000px) rotateX(2deg);
+        box-shadow: 0 12px 24px rgba(66, 153, 225, 0.15);
+        z-index: 2;
+      }
+      
+      &::before {
+        content: "";
+        position: absolute;
+        top: -3px;
+        left: -3px;
+        right: -3px;
+        bottom: -3px;
+        background: linear-gradient(135deg, rgba(66, 153, 225, 0.7), rgba(49, 130, 206, 0.7), rgba(43, 108, 176, 0.7), rgba(66, 153, 225, 0.7));
+        z-index: -1;
+        border-radius: inherit;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        background-size: 300% 300%;
+        animation: productShimmer 4s ease infinite;
+        filter: blur(6px);
+      }
+      
+      &:hover::before {
+        opacity: 0.7;
+      }
       
       .product-image {
         position: relative;
@@ -388,11 +554,11 @@ button.add-to-cart,
   background-color: var(--smartbuy-blue, #0055a6) !important;
   color: white !important;
   padding: 10px 16px !important;
-  border-radius: 4px !important;
+  border-radius: 8px !important;
   border: none !important;
   font-weight: 600 !important;
   cursor: pointer !important;
-  transition: background-color 0.2s ease !important;
+  transition: all 0.3s ease !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -401,7 +567,8 @@ button.add-to-cart,
   
   &:hover, &:focus {
     background-color: var(--smartbuy-dark-blue, #003b73) !important;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15) !important;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2) !important;
+    transform: translateY(-2px) !important;
   }
   
   &:active {
@@ -411,4 +578,261 @@ button.add-to-cart,
   .icon {
     margin-right: 6px !important;
   }
+}
+
+/* Add more subtle animations to various elements */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.heading-accent {
+  position: relative;
+  display: inline-block;
+}
+
+.heading-accent::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 40px;
+  height: 3px;
+  background: linear-gradient(to right, #4299e1, #3182ce);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.heading-accent:hover::after {
+  width: 100%;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .page-container {
+    margin: 10px;
+    padding: 15px;
+  }
+  
+  .store-layout {
+    padding: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  body::after {
+    opacity: 0.5;
+  }
+}
+
+/* Add floating bubbles animation to the background */
+@keyframes float {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(5deg);
+  }
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+@keyframes floatReverse {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-15px) rotate(-5deg);
+  }
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+/* Enhance floating bubbles with additional effects */
+.floating-bubble {
+  position: fixed;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(5px);
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  z-index: -1;
+  pointer-events: none;
+  transition: background 3s ease;
+}
+
+.floating-bubble::before {
+  content: "";
+  position: absolute;
+  top: 5%;
+  left: 5%;
+  width: 90%;
+  height: 90%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), transparent);
+  pointer-events: none;
+}
+
+.bubble-1 {
+  width: 120px;
+  height: 120px;
+  top: 10%;
+  left: 10%;
+  animation: float 15s ease-in-out infinite, colorShift1 20s linear infinite;
+}
+
+.bubble-2 {
+  width: 80px;
+  height: 80px;
+  top: 60%;
+  left: 5%;
+  animation: floatReverse 12s ease-in-out infinite, colorShift2 25s linear infinite;
+}
+
+.bubble-3 {
+  width: 150px;
+  height: 150px;
+  top: 20%;
+  right: 10%;
+  animation: float 18s ease-in-out infinite, colorShift3 22s linear infinite;
+}
+
+.bubble-4 {
+  width: 100px;
+  height: 100px;
+  bottom: 15%;
+  right: 20%;
+  animation: floatReverse 14s ease-in-out infinite, colorShift4 18s linear infinite;
+}
+
+/* Add color shifting animations for bubbles with hardcoded RGBA values */
+@keyframes colorShift1 {
+  0%, 100% { background: rgba(255, 255, 255, 0.5); }
+  25% { background: rgba(255, 182, 193, 0.3); }
+  50% { background: rgba(135, 206, 250, 0.3); }
+  75% { background: rgba(152, 255, 179, 0.3); }
+}
+
+@keyframes colorShift2 {
+  0%, 100% { background: rgba(255, 255, 255, 0.5); }
+  25% { background: rgba(152, 255, 179, 0.3); }
+  50% { background: rgba(255, 182, 193, 0.3); }
+  75% { background: rgba(135, 206, 250, 0.3); }
+}
+
+@keyframes colorShift3 {
+  0%, 100% { background: rgba(255, 255, 255, 0.5); }
+  25% { background: rgba(135, 206, 250, 0.3); }
+  50% { background: rgba(152, 255, 179, 0.3); }
+  75% { background: rgba(255, 182, 193, 0.3); }
+}
+
+@keyframes colorShift4 {
+  0%, 100% { background: rgba(255, 255, 255, 0.5); }
+  25% { background: rgba(204, 153, 255, 0.3); }
+  50% { background: rgba(135, 206, 250, 0.3); }
+  75% { background: rgba(152, 255, 179, 0.3); }
+}
+
+/* Enhanced button effects */
+@keyframes buttonShimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes productShimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Enhanced hover effects for navigation items */
+.nav-item {
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-item::before {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(to right, #4299e1, #3182ce);
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+.nav-item:hover::before {
+  width: 100%;
+}
+
+/* Add shimmering effect to page transitions */
+.page-transition-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.page-transition-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms, transform 300ms;
+}
+
+.page-transition-exit {
+  opacity: 1;
+}
+
+.page-transition-exit-active {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 300ms, transform 300ms;
+}
+
+/* Enhanced heading styles */
+h1, h2, h3 {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+}
+
+h1::after, h2::after, h3::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(to right, var(--cute-accent-blue), var(--cute-accent-pink));
+  transform: scaleX(0);
+  transform-origin: bottom right;
+  transition: transform 0.5s ease;
+}
+
+h1:hover::after, h2:hover::after, h3:hover::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
 }
